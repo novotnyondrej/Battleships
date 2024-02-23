@@ -1,0 +1,4 @@
+C:\Users\User\source\repos\Battleships\obj\Debug\net5.0\Battleships.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\User\source\repos\Battleships\obj\Debug\net5.0\Battleships.AssemblyInfoInputs.cache
+C:\Users\User\source\repos\Battleships\obj\Debug\net5.0\Battleships.AssemblyInfo.cs
+C:\Users\User\source\repos\Battleships\obj\Debug\net5.0\Battleships.csproj.CoreCompileInputs.cache
