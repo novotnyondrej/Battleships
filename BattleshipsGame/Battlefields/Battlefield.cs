@@ -13,14 +13,14 @@ namespace Battleships.BattleshipsGame.Battlefields
 		//Hraci deska, ktere toto bitevni pole patri
 		public Board Parent { get; private set; }
 		//Pozice vsech lodi
-		private List<Battleship> _AllBattleships { get; }
-		public IEnumerable<Battleship> AllBattleships { get => _AllBattleships; }
+		private List<Battleship> _BattleshipsList { get; }
+		public IEnumerable<Battleship> BattleshipsList { get => _BattleshipsList; }
 		//Vrati velikost lodi, ktera stale chybi v bitevnim poli
 		public BattleshipSize? NextMissingBattleship {
 			get
 			{
 				//Pokus o nalezeni lode, ktera na bitevnim poli stale chybi
-				KeyValuePair<BattleshipSize, byte> pair = BattleshipSet.FirstOrDefault(pair => _AllBattleships.Count(battleship => pair.Key == battleship.Size) < pair.Value);
+				KeyValuePair<BattleshipSize, byte> pair = BattleshipSet.FirstOrDefault(pair => _BattleshipsList.Count(battleship => pair.Key == battleship.Size) < pair.Value);
 				//Pokud nenalezeno, vratit null (bitevni pole je kompletni)
 				if (pair.Equals(default(KeyValuePair<BattleshipSize, byte>))) return null;
 				//Vraceni velikosti chybejici lode

@@ -4,15 +4,27 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using Battleships.BattleshipsGame.Battlefields;
+using Battleships.BattleshipsGame.Battleships;
 
 namespace Battleships.BattleshipsGame.Players
 {
+	//Hrac
 	class Player : IPlayer
 	{
-		public Coordinate GetNextMove(Board board, Battlefield battlefield)
+		//Dava hracovi moznost vybrat sadu lodi
+		public IReadOnlyDictionary<BattleshipSize, byte> PickBattleshipSet(IEnumerable<IReadOnlyDictionary<BattleshipSize, byte>> sets)
+		{
+			return default;
+		}
+		//Ziska souradnici, na kterou chce hrac umistit lod
+		public (Coordinate position, BattleshipOrientation orientation) PlaceBattleship(Battlefield battlefield, BattleshipSize size)
+		{
+			return default;
+		}
+		//Ziska souradnici, na kterou chce hrac zautocit
+		public Coordinate Attack(Board board, Battlefield battlefield)
 		{
 			return null;
 		}
-		//public (Coordinate, Orientation) 
 	}
 }
