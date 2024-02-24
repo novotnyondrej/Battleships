@@ -21,15 +21,25 @@ namespace Battleships.BattleshipsGame.Battlefields
 		private protected List<Battleship> _SunkenBattleships;
 		public IEnumerable<Battleship> SunkenBattleships { get => _SunkenBattleships; }
 
-		public EnemyBattlefield(int width, int? height = null, IReadOnlyDictionary<BattleshipSize, byte> battleshipSet = null)
+		public EnemyBattlefield(byte width, byte? height = null, IReadOnlyDictionary<BattleshipSize, byte> battleshipSet = null)
 		{
 			
 		}
 		//Na zaklade velikosti mapy vygeneruje ruzne sady lodi
 		//Sada je serazena od nejvetsi lodi po tu nejmensi
-		public static IEnumerable<IReadOnlyDictionary<BattleshipSize, byte>> GetAllBattleshipSets(int width, int? height, bool generateFirstOnly = false)
+		public static IEnumerable<IReadOnlyDictionary<BattleshipSize, byte>> GetAllBattleshipSets(byte width, byte? height = null, bool generateFirstOnly = false)
 		{
-			return null;
+			return new List<Dictionary<BattleshipSize, byte>>()
+			{
+				new()
+				{
+					{ BattleshipSize.Carrier, 1 },
+					{ BattleshipSize.Battleship, 1 },
+					{ BattleshipSize.Submarine, 1 },
+					{ BattleshipSize.Cruiser, 1 },
+					{ BattleshipSize.PatrolBoat, 1 }
+				}
+			};
 		}
 	}
 }

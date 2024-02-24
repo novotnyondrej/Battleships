@@ -43,7 +43,11 @@ namespace Battleships.BattleshipsGame.Battlefields
 			return false;
 		}
 		//Odehraje
-		public bool Play()
+		public Coordinate Attack()
+		{
+			return null;
+		}
+		public bool GetAttacked(Coordinate coordinate)
 		{
 			return false;
 		}

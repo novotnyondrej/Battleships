@@ -11,10 +11,13 @@ namespace Battleships.BattleshipsGame.Players
 	//Rozhrani pro hrace
 	interface IPlayer
 	{
+		//Ziska velikost bitevniho pole
+		public byte? GetBattlefieldSize(byte minimumSize = 6, byte maximumSize = 16);
 		//Dava hracovi moznost vybrat sadu lodi
 		public IReadOnlyDictionary<BattleshipSize, byte> PickBattleshipSet(IEnumerable<IReadOnlyDictionary<BattleshipSize, byte>> sets);
 		//Ziska souradnici, na kterou chce hrac umistit lod
-		public (Coordinate position, BattleshipOrientation orientation) PlaceBattleship(Battlefield battlefield, BattleshipSize size);
+		public bool PlaceBattleship(Battlefield battlefield);
+		public bool PlaceAllBattleships(Battlefield battlefield);
 		//Ziska souradnici, na kterou chce hrac zautocit
 		public Coordinate Attack(Board board, Battlefield battlefield);
 	}

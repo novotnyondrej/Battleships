@@ -11,15 +11,28 @@ namespace Battleships.BattleshipsGame.Players
 	//Umela inteligence
 	class AI : IPlayer
 	{
+		//Ziska velikost bitevniho pole
+		public byte? GetBattlefieldSize(byte minimumSize = 6, byte maximumSize = 16)
+		{
+			//Generace nahodneho cisla
+			Random random = new();
+			byte size = (byte)(random.Next(minimumSize, maximumSize));
+			//Navraceni velikosti pole
+			return size;
+		}
 		//Dava hracovi moznost vybrat sadu lodi
 		public IReadOnlyDictionary<BattleshipSize, byte> PickBattleshipSet(IEnumerable<IReadOnlyDictionary<BattleshipSize, byte>> sets)
 		{
-			return default;
+			return sets.First();
 		}
 		//Ziska souradnici, na kterou chce hrac umistit lod
-		public (Coordinate position, BattleshipOrientation orientation) PlaceBattleship(Battlefield battlefield, BattleshipSize size)
+		public bool PlaceBattleship(Battlefield battlefield)
 		{
-			return default;
+			return false;
+		}
+		public bool PlaceAllBattleships(Battlefield battlefield)
+		{
+			return false;
 		}
 		//Ziska souradnici, na kterou chce hrac zautocit
 		public Coordinate Attack(Board board, Battlefield battlefield)

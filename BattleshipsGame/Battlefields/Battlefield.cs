@@ -30,10 +30,9 @@ namespace Battleships.BattleshipsGame.Battlefields
 		//Zda je bitevni pole plne nastaveno
 		public bool Ready { get => !(NextMissingBattleship is null); }
 
-		public Battlefield(int width, int? height = null) : base(width, height)
+		public Battlefield(byte width, byte? height = null, IReadOnlyDictionary<BattleshipSize, byte> battleshipSet = null) : base(width, height, battleshipSet)
 		{
 			
-
 		}
 		//Pokus o umisteni lode na souradnici
 		//Pri uspesnem umisteni bude vytvorena nova lod a bude pridana do seznamu lodi
