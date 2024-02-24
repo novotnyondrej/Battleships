@@ -14,7 +14,7 @@ namespace Battleships.BattleshipsGame.Battlefields
 		public Game Parent { get; private set; }
 		//Zda je tato hraci deska ve hre povazovana jako vyzyvatelova
 		public bool IsChallengerBoard { get => Parent.ChallengerBoard == this; }
-		//Zda je na rade
+		//Zda je hrac na rade
 		public bool OnMove { get => IsChallengerBoard == Parent.ChallengerOnMove; }
 
 		//Hrac, kteremu tato deska patri

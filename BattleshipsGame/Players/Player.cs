@@ -13,6 +13,6 @@ namespace Battleships.BattleshipsGame.Players
 		{
 			return null;
 		}
-		public (Coordinate, Orientation) 
+		//public (Coordinate, Orientation) 
 	}
 }

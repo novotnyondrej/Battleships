@@ -6,7 +6,8 @@ using System.Collections.Generic;
 
 namespace Battleships.BattleshipsGame.Battleships
 {
-	enum Orientation : byte
+	//Orientace lodi
+	enum BattleshipOrientation : byte
 	{
 		North = 0,
 		East = 1,
