@@ -32,6 +32,7 @@ namespace Battleships.BattleshipsGame.Players
 		}
 		public bool PlaceAllBattleships(Battlefield battlefield)
 		{
+			
 			return false;
 		}
 		//Ziska souradnici, na kterou chce hrac zautocit

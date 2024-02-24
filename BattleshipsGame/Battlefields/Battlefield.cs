@@ -32,18 +32,43 @@ namespace Battleships.BattleshipsGame.Battlefields
 
 		public Battlefield(byte width, byte? height = null, IReadOnlyDictionary<BattleshipSize, byte> battleshipSet = null) : base(width, height, battleshipSet)
 		{
-			
+			_BattleshipsList = new();
 		}
 		//Pokus o umisteni lode na souradnici
 		//Pri uspesnem umisteni bude vytvorena nova lod a bude pridana do seznamu lodi
 		public bool PlaceNextBattleship(Coordinate coordinate, BattleshipOrientation orientation)
 		{
-			return false;
+			//Ziskani velikosti pokladane lode
+			BattleshipSize? nullableSize = NextMissingBattleship;
+			//Kontrola, ze vubec je co pokladat
+			if (nullableSize is null) return false;
+
+			BattleshipSize size = (BattleshipSize)nullableSize;
+
+			//Ziskani vsech souradnic, na kterych by se budouci lod nachazela
+			IEnumerable<Coordinate> futureTotalPosition = Battleship.GetTotalPosition(this, coordinate, size, orientation);
+			//Nejprve je treba overit, ze lod nepresahuje hranici mapy
+			if (futureTotalPosition.Count() < (byte)size) return false;
+
+			//Kontrola dostupnosti jednotlivych poli
+			bool occupied = _BattleshipsList.Any(
+				ship => ship.TotalPosition.Any(
+					occupiedPosition => futureTotalPosition.Any(
+						futurePosition => occupiedPosition == futurePosition
+					)
+				)
+			);
+			if (occupied) return false;
+
+			//Lod lze umistit do bitevniho pole
+			_BattleshipsList.Add(new(this, coordinate, size, orientation));
+			return true;
 		}
 		//Nastavi hraci desku, pod kterou toto bitevni podle spada
 		public bool SetParent(Board parent)
 		{
-			return false;
+			Parent = parent;
+			return true;
 		}
 		//Provede utok na souradnici
 		public bool Attack(Coordinate coordinate)
