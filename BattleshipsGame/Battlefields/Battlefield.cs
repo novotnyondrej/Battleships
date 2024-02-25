@@ -54,7 +54,7 @@ namespace Battleships.BattleshipsGame.Battlefields
 			bool occupied = _BattleshipsList.Any(
 				ship => ship.TotalPosition.Any(
 					occupiedPosition => futureTotalPosition.Any(
-						futurePosition => occupiedPosition == futurePosition
+						futurePosition => occupiedPosition == futurePosition || occupiedPosition.IsNeighborOf(futurePosition)
 					)
 				)
 			);
@@ -70,10 +70,49 @@ namespace Battleships.BattleshipsGame.Battlefields
 			Parent = parent;
 			return true;
 		}
-		//Provede utok na souradnici
-		public bool Attack(Coordinate coordinate)
+		//Prijme utok od oponenta
+		public bool GetAttacked(Coordinate coordinate)
 		{
-			return false;
+			//Kontrola, ze souradnice jiz nebyla uhodnuta
+			if (_AttackedCoordinates.ContainsKey(coordinate)) return false;
+			//Ziskani lode, ktera se na teto souradnici nachazi
+			Battleship battleship = _BattleshipsList.FirstOrDefault(
+				battleship => battleship.TotalPosition.Contains(coordinate)
+			);
+			//Ziskani vysledku utoku
+			AttackResult result = (battleship == default ? AttackResult.Miss : AttackResult.Hit);
+			//Pridani vysledku do seznamu
+			_AttackedCoordinates.Add(coordinate, result);
+
+			//Pokud byla lod zasahnuta, je treba provest kontrolu, zda byla plne potopena
+			if (result == AttackResult.Hit)
+			{
+				bool sunken = battleship.TotalPosition.All(
+					coordinate => _AttackedCoordinates.ContainsKey(coordinate)
+				);
+				//Pokud lod byla potopena, je treba ji pridat do seznamu potopenych lodi a ziskat vsechny okolni policka a oznacit je jako trefu vedle
+				if (sunken)
+				{
+					//Pridani lode do seznamu potopenych lodi
+					_SunkenBattleships.Add(battleship);
+					//Ziskani vsech okolnich policek
+					IEnumerable<Coordinate> neighbors = CoordinateMap.Select(
+						row => row.Where(
+							coordinate => battleship.TotalPosition.Any(
+								position => position.IsNeighborOf(coordinate)
+							)
+						)
+					).SelectMany(item => item);
+					//Oznaceni okolnich policek jako trefy vedle
+					foreach (Coordinate neighbor in neighbors)
+					{
+						if (_AttackedCoordinates.ContainsKey(neighbor)) continue;
+						//Oznaceni souradnice jako ozkousenou
+						_AttackedCoordinates.Add(neighbor, AttackResult.Miss);
+					}
+				}
+			}
+			return true;
 		}
 	}
 }

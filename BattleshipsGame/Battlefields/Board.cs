@@ -12,22 +12,27 @@ namespace Battleships.BattleshipsGame.Battlefields
 	{
 		//Hra, pod kterou tato deska spada
 		public Game Parent { get; private set; }
-		//Zda je tato hraci deska ve hre povazovana jako vyzyvatelova
-		public bool IsChallengerBoard { get => Parent.ChallengerBoard == this; }
+		public bool HasParent { get => !(Parent is null); }
+
+		//Zda je tato hraci deska ve hr!e povazovana jako vyzyvatelova
+		public bool IsChallengerBoard { get => HasParent && Parent.ChallengerBoard == this; }
 		//Zda je hrac na rade
-		public bool OnMove { get => IsChallengerBoard == Parent.ChallengerOnMove; }
+		public bool OnMove { get => HasParent && IsChallengerBoard == Parent.ChallengerOnMove; }
+		//Zda lze provest utok na tuto desku
+		public bool IsVulnerable { get => HasParent && (!OnMove) && Parent.AttackingAllowed;  }
 
 		//Hrac, kteremu tato deska patri
 		public IPlayer Owner { get; }
 		//Protihracova hraci deska
-		private Board OpponentBoard { get; set; }
+		private Board OpponentBoard { get => HasParent ? (IsChallengerBoard ? Parent.OpponentBoard : Parent.ChallengerBoard) : null; }
+		private bool HasOpponent { get => !(OpponentBoard is null); }
 
 		//Bitevni pole
 		//Tohoto hrace
 		private Battlefield _OwnerBattlefield { get; }
 		public EnemyBattlefield OwnerBattlefield { get => _OwnerBattlefield; }
 		//Protihrace
-		public EnemyBattlefield OpponentBattlefield { get => OpponentBoard.OwnerBattlefield; }
+		public EnemyBattlefield OpponentBattlefield { get => HasOpponent ? OpponentBoard.OwnerBattlefield : null; }
 		
 		//Vytvori novou hraci desku
 		public Board(IPlayer owner, Battlefield ownerBattlefield)
@@ -40,16 +45,27 @@ namespace Battleships.BattleshipsGame.Battlefields
 		//Nastavi hru
 		public bool SetParent(Game game)
 		{
-			return false;
+			//Kontrola, ze hraci deska opravdu patri do teto hry
+			if (game.ChallengerBoard != this && game.OpponentBoard != this) return false;
+			
+			Parent = game;
+			return true;
 		}
 		//Odehraje
 		public Coordinate Attack()
 		{
-			return null;
+			//Kontrola, ze opravdu jsme na rade
+			if (!OnMove) return null;
+			//Ziskani souradnice k utoku
+			return Owner.Attack(OpponentBattlefield, _OwnerBattlefield);
 		}
+		//Prijme utok od oponenta
 		public bool GetAttacked(Coordinate coordinate)
 		{
-			return false;
+			//Kontrola, ze na desku doopravdy jde zautocit
+			if (!IsVulnerable) return false;
+			//Preneseni zpravy k bitevnimu poli
+			return _OwnerBattlefield.GetAttacked(coordinate);
 		}
 	}
 }

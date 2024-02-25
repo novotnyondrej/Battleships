@@ -37,7 +37,7 @@ namespace Battleships.BattleshipsGame.Players
 			return false;
 		}
 		//Ziska souradnici, na kterou chce hrac zautocit
-		public Coordinate Attack(Board board, Battlefield battlefield)
+		public Coordinate Attack(EnemyBattlefield enemyBattlefield, Battlefield ownerBattlefield)
 		{
 			return null;
 		}

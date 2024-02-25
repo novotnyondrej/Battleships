@@ -2,7 +2,7 @@
 using Battleships.BattleshipsGame;
 using Battleships.BattleshipsGame.Players;
 
-//Straveny cas: 7h
+//Straveny cas: 8.5h
 //https://github.com/novotnyondrej/Battleships
 namespace Battleships
 {

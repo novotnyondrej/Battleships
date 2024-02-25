@@ -25,7 +25,9 @@ namespace Battleships.BattleshipsGame
 		//Zda hra aktualne povoluje utoky do ciziho pole
 		public bool AttackingAllowed { get; private set; }
 		//Zda je hra ukoncena
-		public bool Ended { get; private set; }
+		public bool Ended { get => ChallengerBoard.OwnerBattlefield.AllShipsSunken || OpponentBoard.OwnerBattlefield.AllShipsSunken; }
+		//Kdo vyhral
+		public bool ChallengerWon { get => OpponentBoard.OwnerBattlefield.AllShipsSunken; }
 
 		//Vytvori novou hru
 		private Game(Board challengerBoard, Board opponentBoard, bool challengerStarts = true)
@@ -82,6 +84,9 @@ namespace Battleships.BattleshipsGame
 		//Pokracuje ve hre
 		public bool? Progress()
 		{
+			//Kontrola stavu hry
+			if (Ended) return false;
+
 			//Ziskani utocnika
 			Board currentBoard = (ChallengerOnMove ? ChallengerBoard : OpponentBoard);
 			Board nextBoard = (ChallengerOnMove ? OpponentBoard : ChallengerBoard);

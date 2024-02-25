@@ -29,7 +29,7 @@ namespace Battleships.BattleshipsGame.Battleships
 			Position = position;
 			Size = size;
 			Orientation = orientation;
-			TotalPosition = Battleship.GetTotalPosition(parent, position, size, orientation);
+			TotalPosition = GetTotalPosition(parent, position, size, orientation);
 		}
 		//Ziska vsechny souradnice, na kterych se lod nachazi
 		public static IEnumerable<Coordinate> GetTotalPosition(Battlefield battlefield, Coordinate position, BattleshipSize size, BattleshipOrientation orientation)
@@ -38,17 +38,19 @@ namespace Battleships.BattleshipsGame.Battleships
 			byte x = position.X;
 			byte y = position.Y;
 			//Ziskani smeru
-			byte xStep = (byte)(orientation == BattleshipOrientation.East ? 1 : (orientation == BattleshipOrientation.West ? -1 : 0));
-			byte yStep = (byte)(orientation == BattleshipOrientation.South ? 1 : (orientation == BattleshipOrientation.North ? -1 : 0));
+			int xStep = (orientation == BattleshipOrientation.East ? 1 : (orientation == BattleshipOrientation.West ? -1 : 0));
+			int yStep = (orientation == BattleshipOrientation.South ? 1 : (orientation == BattleshipOrientation.North ? -1 : 0));
 
 			List<Coordinate> totalPosition = new();
 			for (byte cellNum = 0; cellNum < (byte)size; cellNum++)
 			{
 				//Vypocet novych souradnic
-				byte newX = (byte)(x + xStep * cellNum);
-				byte newY = (byte)(y + yStep * cellNum);
+				int newX = (x + xStep * cellNum);
+				int newY = (y + yStep * cellNum);
+				//Kontrola souradnic
+				if (newX < byte.MinValue || newY < byte.MinValue || newX > byte.MaxValue || newY > byte.MaxValue) break;
 				//Nacteni souradnice
-				Coordinate newPosition = battlefield.GetCoordinate(newX, newY);
+				Coordinate newPosition = battlefield.GetCoordinate((byte)newX, (byte)newY);
 				if (newPosition is null) break;
 
 				//Pridani souradnice do seznamu

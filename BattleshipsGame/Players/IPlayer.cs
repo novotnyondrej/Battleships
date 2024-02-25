@@ -19,6 +19,6 @@ namespace Battleships.BattleshipsGame.Players
 		public bool PlaceBattleship(Battlefield battlefield);
 		public bool PlaceAllBattleships(Battlefield battlefield);
 		//Ziska souradnici, na kterou chce hrac zautocit
-		public Coordinate Attack(Board board, Battlefield battlefield);
+		public Coordinate Attack(EnemyBattlefield enemyBattlefield, Battlefield ownerBattlefield);
 	}
 }
