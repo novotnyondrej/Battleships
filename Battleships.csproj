@@ -14,10 +14,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Menus\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Resource Include="Resources\Languages\en.json" />
   </ItemGroup>
 

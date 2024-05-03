@@ -12,13 +12,15 @@ namespace Battleships.Content
 		Unknown = 0,
 		Undefined = 1,
 
-		TextTooShort = 10,
-		TextTooLong = 11,
+		Back = 10,
+		Exit = 11,
 
-		OutOfRange = 20,
-		NaN = 21,
-		TooSmallNumber = 22,
-		TooBigNumber = 23,
-		Test = 30
+		TextTooShort = 20,
+		TextTooLong = 21,
+
+		OutOfRange = 30,
+		NaN = 31,
+		TooSmallNumber = 32,
+		TooBigNumber = 33,
 	}
 }

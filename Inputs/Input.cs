@@ -80,11 +80,11 @@ namespace Battleships.Inputs
 			return int.Parse(response);
 		}
 		//Vstup pro vyber z moznosti
-		public static T SelectionInput<T>(TranslationKey questionTranslationKey, IEnumerable<T> options)
+		public static int SelectionInput<T>(TranslationKey questionTranslationKey, IEnumerable<T> options)
 		{
 			//Celkovy pocet moznosti
 			int optionsCount = options.Count();
-			if (optionsCount <= 0) return default;
+			if (optionsCount <= 0) return -1;
 
 			bool visible = Console.CursorVisible;
 			Console.CursorVisible = false;
@@ -106,7 +106,7 @@ namespace Battleships.Inputs
 				if (control == Control.Cancel)
 				{
 					Console.CursorVisible = visible;
-					return default;
+					return -1;
 				}
 				else if (control == Control.Confirm)
 				{
@@ -129,7 +129,7 @@ namespace Battleships.Inputs
 			while (!selected);
 
 			Console.CursorVisible = visible;
-			return options.ElementAt(selectedIndex);
+			return selectedIndex;
 		}
 	}
 }

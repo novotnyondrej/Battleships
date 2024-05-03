@@ -47,25 +47,25 @@ namespace Battleships.Content
 			if (!Translations.ContainsKey(language)) return default;
 			return Translations[language];
 		}
-		private static (bool keyExists, string translation) TryGetTranslation(TranslationKey translationKey, string targetLanguage = "en")
+		private static (bool keyExists, string translation) TryGetTranslation(TranslationKey? translationKey, string targetLanguage = "en")
 		{
 			//Pokus o ziskani jazyka
 			Dictionary<TranslationKey, string> translations = GetTranslations(targetLanguage);
 			//Kontrola existence jazyka
 			if (translations == default) return (false, default);
 			//Kontrola exitence prekladu
-			if (!translations.ContainsKey(translationKey))
+			if (translationKey is null || !translations.ContainsKey((TranslationKey)translationKey))
 			{
 				//Klic neexistuje
 				//Pokus o nalezeni klice pro neznamy preklad
 				if (!translations.ContainsKey(TranslationKey.Undefined)) return (false, default);
 				//Vraceni neznameho prekladu
-				return (false, String.Format(translations[TranslationKey.Undefined], translationKey.ToString()));
+				return (false, String.Format(translations[TranslationKey.Undefined], (translationKey is null ? "null" : translationKey.ToString())));
 			}
-			return (true, translations[translationKey]);
+			return (true, translations[(TranslationKey)translationKey]);
 		}
 		//Ziska preklad daneho klice
-		public static string GetTranslation(TranslationKey translationKey, string targetLanguage = "en")
+		public static string GetTranslation(TranslationKey? translationKey, string targetLanguage = "en")
 		{
 			//Pokus o ziskani prekladu v cilovem jazyce
 			(bool keyExists, string translation) = TryGetTranslation(translationKey, targetLanguage);

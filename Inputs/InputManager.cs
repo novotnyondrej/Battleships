@@ -138,6 +138,7 @@ namespace Battleships.Inputs
 			//Nova otazka => obnoveni kurzoru
 			InitialCursorPosition = Console.GetCursorPosition();
 			InputCursorPositions.Clear();
+			Options.Clear();
 			//Vypsani otazky
 			ConsoleColor original = Console.ForegroundColor;
 			Console.ForegroundColor = QuestionColor;
