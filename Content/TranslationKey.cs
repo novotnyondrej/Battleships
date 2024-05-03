@@ -4,7 +4,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 
-namespace Battleships.Inputs.Content
+namespace Battleships.Content
 {
 	//Klice pro preklady textu
 	enum TranslationKey
@@ -18,7 +18,7 @@ namespace Battleships.Inputs.Content
 		OutOfRange = 20,
 		NaN = 21,
 		TooSmallNumber = 22,
-		TooBigNumber = 23
-
+		TooBigNumber = 23,
+		Test = 30
 	}
 }

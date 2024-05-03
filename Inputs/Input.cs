@@ -4,7 +4,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using Battleships.Inputs.Controls;
-using Battleships.Inputs.Content;
+using Battleships.Content;
 
 namespace Battleships.Inputs
 {
