@@ -25,7 +25,7 @@ namespace Battleships.Inputs
 		private static (int Left, int Top) InitialCursorPosition;
 		//Seznam pozic kurzoru pro danou otazku
 		private static List<(int Left, int Top)> InputCursorPositions = new();
-		private static List<string> Options = new();
+		private static List<(string text, bool available, string reason)> Options = new();
 
 
 		//Pracovani s kurzorem
@@ -164,17 +164,39 @@ namespace Battleships.Inputs
 			if (withInputCharacter) PrintInputCharacter();
 		}
 		//Vypise uzivateli moznost
-		public static void PrintOption(string option, bool selected = false, bool savePosition = true, bool forceNewLine = true)
+		public static void PrintOption(string option, bool available, string reason, bool selected = false, bool savePosition = true, bool forceNewLine = true)
 		{
 			//Vypsani znaku pro vstup
 			PrintInputCharacter(forceNewLine, selected, savePosition);
+			
+			Options.Add((option, available, reason));
+			ReprintOption(Options.Count - 1, selected, forceNewLine);
+		}
+		//Znovu vypise moznost
+		private static void ReprintOption(int optionIndex, bool selected = false, bool forceNewLine = true)
+		{
+			//Kontrola existence
+			if (optionIndex < 0 || optionIndex >= Options.Count || optionIndex > InputCursorPositions.Count) return;
+			//Ziskani pozice kurzoru
+			(int Left, int Top) position = InputCursorPositions.ElementAtOrDefault(optionIndex);
+			//Ziskani moznosti
+			(string text, bool available, string reason) = Options.ElementAt(optionIndex);
+
+			//Nastaveni pozice
+			Console.SetCursorPosition(position.Left, position.Top);
+			//Vypsani znaku pro vstup
+			PrintInputCharacter(forceNewLine, selected, false);
 			//Vypsani moznosti
 			ConsoleColor original = Console.ForegroundColor;
 			Console.ForegroundColor = (selected ? SelectionColor : InputColor);
-			Write(option);
-			Console.ForegroundColor = original;
+			Write(text);
 
-			Options.Add(option);
+			if (!available)
+			{
+				Console.ForegroundColor = ReasonColor;
+				Write(" (" + reason + ")");
+			}
+			Console.ForegroundColor = original;
 		}
 		//Vybere moznost
 		public static void SelectOption(int selectedOptionIndex)
@@ -187,15 +209,7 @@ namespace Battleships.Inputs
 			//Oznaceni moznosti
 			for (int optionIndex = 0; optionIndex < Options.Count; optionIndex++)
 			{
-				//Ziskani textu
-				string option = Options[optionIndex];
-				//Ziskani pozice kurzoru
-				(int Left, int Top) position = InputCursorPositions.ElementAtOrDefault(optionIndex);
-				//Pozice by vzdy mela existovat
-				if (position == default) continue;
-				//Nastaveni pozice
-				Console.SetCursorPosition(position.Left, position.Top);
-				PrintOption(option, optionIndex == selectedOptionIndex, false, false);
+				ReprintOption(optionIndex, optionIndex == selectedOptionIndex, false);
 			}
 			Console.SetCursorPosition(initialPosition.Left, initialPosition.Top);
 		}

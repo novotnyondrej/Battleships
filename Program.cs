@@ -9,7 +9,7 @@ using Battleships.Data;
 using Battleships.Menus;
 using System.Linq;
 
-//Straveny cas: 17h
+//Straveny cas: 19h
 //https://github.com/novotnyondrej/Battleships
 namespace Battleships
 {
@@ -32,7 +32,7 @@ namespace Battleships
 				new List<IMenu>()
 				{
 					new ParentMenu(null, Enumerable.Empty<IMenu>()),
-					new ParentMenu(TranslationKey.Unknown, Enumerable.Empty<IMenu>()),
+					new ParentMenu(TranslationKey.Unknown, Enumerable.Empty<IMenu>(), () => (false, TranslationKey.NaN)),
 					new ParentMenu(TranslationKey.Unknown, new List<IMenu>()
 					{
 						new ParentMenu(TranslationKey.Unknown, Enumerable.Empty<IMenu>())

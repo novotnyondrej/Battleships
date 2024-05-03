@@ -14,14 +14,16 @@ namespace Battleships.Menus
 		//Pripadny preklad nazvu menu
 		public TranslationKey? NameTranslationKey { get; }
 		//Vyhodnoti, zda je tato sekce dostupna
-		public Func<(bool available, TranslationKey reasonTranslationKey)>? AvailabilityFunction { get; }
+		public Func<(bool available, TranslationKey reasonTranslationKey)> AvailabilityFunction { get; }
 
 		//Rodicovsky element
 		public IMenu Parent { get; set; }
+		public bool HasParent { get => Parent is not null; }
+
 		//Moznosti kam dale
 		public IEnumerable<IMenu> Options { get; }
 
-		public ParentMenu(TranslationKey? nameTranslationKey, IEnumerable<IMenu> options, Func<(bool available, TranslationKey reaonTranslationKey)> availabilityFunction)
+		public ParentMenu(TranslationKey? nameTranslationKey, IEnumerable<IMenu> options, Func<(bool available, TranslationKey reaonTranslationKey)> availabilityFunction = default)
 		{
 			NameTranslationKey = nameTranslationKey;
 			AvailabilityFunction = availabilityFunction;
@@ -34,19 +36,33 @@ namespace Battleships.Menus
 		{
 			//Nacteni moznosti jako texty
 			List<string> options = Options.Select((option) => option.Name).ToList();
+			//Nacteni dostupnosti moznosti
+			List<(bool available, TranslationKey reasonTranslationKey)> availability = Options.Select((option) => option.Availability()).ToList();
 			//Pridani moznosti pro vraceni se zpet
-			options.Insert(0, ContentManager.GetTranslation((Parent is not null) ? TranslationKey.Back : TranslationKey.Exit));
-			//Ziskani volby
-			int index = Input.SelectionInput<string>(TranslationKey.Unknown, options);
-			//Kontrola volby
-			if (index <= 0)
+			if (HasParent)
 			{
-				//Uzivatel se chce vratit o uroven vyse
-				if (Parent is not null) Parent.Show();
-				return;
+				options.Insert(0, ContentManager.GetTranslation(TranslationKey.Back));
+				availability.Insert(0, Parent.Availability());
 			}
-			//Zobrazeni potomka
-			Options.ElementAt(index - 1).Show();
+			else
+			{
+				options.Add(ContentManager.GetTranslation(TranslationKey.Exit));
+				availability.Add((true, TranslationKey.Unknown));
+			}
+			int realOptionsCount = Options.Count();
+			int index = 0;
+			//Dokud neni konec tak zobrazovat menu
+			do
+			{
+				//Ziskani volby
+				index = Input.SelectionInput<string>(TranslationKey.Unknown, options, index, availability);
+				if ((!HasParent && index < realOptionsCount) || (HasParent && index > 0))
+				{
+					//Zobrazeni potomka
+					Options.ElementAt(!HasParent ? index : index - 1).Show();
+				}
+			}
+			while ((!HasParent && index < realOptionsCount) || (HasParent && index > 0));
 		}
 	}
 }

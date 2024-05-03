@@ -80,8 +80,10 @@ namespace Battleships.Inputs
 			return int.Parse(response);
 		}
 		//Vstup pro vyber z moznosti
-		public static int SelectionInput<T>(TranslationKey questionTranslationKey, IEnumerable<T> options)
+		public static int SelectionInput<T>(TranslationKey questionTranslationKey, IEnumerable<T> options, int selectedIndex, IEnumerable<(bool available, TranslationKey reasonTranslationKey)> availability = null)
 		{
+			availability ??= Enumerable.Empty<(bool available, TranslationKey reasonTranslationKey)>();
+
 			//Celkovy pocet moznosti
 			int optionsCount = options.Count();
 			if (optionsCount <= 0) return -1;
@@ -92,9 +94,21 @@ namespace Battleships.Inputs
 			//Vypsani otazky
 			InputManager.PrintQuestion(ContentManager.GetTranslation(questionTranslationKey), false);
 			//Vypsani vsech moznosti
-			foreach (T option in options) InputManager.PrintOption(option.ToString());
+			for (int optionIndex = 0; optionIndex < optionsCount; optionIndex++)
+			{
+				//Ziskani moznosti
+				T option = options.ElementAt(optionIndex);
+				bool available = true;
+				TranslationKey reasonTranslationKey = TranslationKey.Unknown;
+				//Pokus o nacteni dostupnosti
+				if (optionIndex < availability.Count())
+				{
+					(available, reasonTranslationKey) = availability.ElementAtOrDefault(optionIndex);
+				}
+				//Vypsani moznosti
+				InputManager.PrintOption(option.ToString(), available, ContentManager.GetTranslation(reasonTranslationKey));
+			}
 			//Aktualne vybrana moznost
-			int selectedIndex = 0;
 			bool selected = false;
 			do
 			{
@@ -110,6 +124,8 @@ namespace Battleships.Inputs
 				}
 				else if (control == Control.Confirm)
 				{
+					//Kontrola, ze je moznost dostupna
+					if (selectedIndex < availability.Count() && !availability.ElementAt(selectedIndex).available) continue;
 					//Ukotveni moznosti
 					selected = true;
 				}

@@ -14,13 +14,14 @@ namespace Battleships.Menus
 		public TranslationKey? NameTranslationKey { get; }
 		public string Name { get => ContentManager.GetTranslation(NameTranslationKey); }
 		//Vyhodnoti, zda je tato sekce dostupna
-		public Func<(bool available, TranslationKey reasonTranslationKey)>? AvailabilityFunction { get; }
+		public Func<(bool available, TranslationKey reasonTranslationKey)> AvailabilityFunction { get; }
 
 		//Rodicovsky element
 		public IMenu Parent { get; set; }
+		public bool HasParent { get => Parent is not null; }
 		//Zobrazi uzivateli menu
 		public void Show();
 		//Zda je dostupna tato sekce
-		public bool Available() => AvailabilityFunction is null || AvailabilityFunction().available;
+		public (bool available, TranslationKey reasonTranslationKey) Availability() => AvailabilityFunction == default ? (true, TranslationKey.Unknown) : AvailabilityFunction();
 	}
 }
