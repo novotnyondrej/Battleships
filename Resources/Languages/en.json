@@ -1,0 +1,13 @@
+﻿{
+	"self": "English",
+
+	"Unknown": "Unknown translation",
+	"Undefined":  "Undefined translation key: \"{0}\"",
+	"TextTooShort": "Must be at least {0} characters long",
+	"TextTooLong": "Must not be longer than {0} characters",
+
+	"OutOfRange": "Number is out of range",
+	"NaN": "Not a number",
+	"TooSmallNumber": "Must be bigger than or equal to {0}",
+	"TooBigNumber": "Must be smaller than or equal to {0}"
+}

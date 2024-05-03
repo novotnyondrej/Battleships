@@ -4,6 +4,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using Battleships.Inputs.Controls;
+using Battleships.Inputs.Content;
 
 namespace Battleships.Inputs
 {
@@ -11,7 +12,7 @@ namespace Battleships.Inputs
 	static class Input
 	{
 		//Textovy vstup s minimalni a maximalni delkou textu
-		public static string? TextInput(string question, uint minLength = 0, uint maxLength = 0)
+		public static string? TextInput(TranslationKey questionTranslationKey, uint minLength = 0, uint maxLength = 0)
 		{
 			bool hasMinLength = minLength > 0;
 			bool hasMaxLength = maxLength > 0;
@@ -24,20 +25,20 @@ namespace Battleships.Inputs
 				minLength -= maxLength;
 			}
 			//Vypsani otazky
-			InputManager.PrintQuestion(question);
+			InputManager.PrintQuestion(ContentManager.GetTranslation(questionTranslationKey));
 			//Ziskani odpovedi
 			string response = InputManager.ReadLine(delegate(string response)
 			{
 				//Kontrola delky textu
-				if (hasMinLength && response.Length < minLength) return (false, "moc kratky" + minLength);
-				if (hasMaxLength && response.Length > maxLength) return (false, "moc dlouhy" + maxLength);
+				if (hasMinLength && response.Length < minLength) return (false, String.Format(ContentManager.GetTranslation(TranslationKey.TextTooShort), minLength));
+				if (hasMaxLength && response.Length > maxLength) return (false, String.Format(ContentManager.GetTranslation(TranslationKey.TextTooLong), maxLength));
 				//Text je platny
 				return (true, default);
 			});
 			return response;
 		}
 		//Vstup pro zadani cisla s minimalni a maximalni hodnotou
-		public static int? IntInput(string question, int? min = null, int? max = null)
+		public static int? IntInput(TranslationKey questionTranslationKey, int? min = null, int? max = null)
 		{
 			min ??= int.MinValue;
 			max ??= int.MaxValue;
@@ -50,7 +51,7 @@ namespace Battleships.Inputs
 				min -= max;
 			}
 			//Vypsani otazky
-			InputManager.PrintQuestion(question);
+			InputManager.PrintQuestion(ContentManager.GetTranslation(questionTranslationKey));
 			//Ziskani odpovedi
 			string response = InputManager.ReadLine(delegate (string response)
 			{
@@ -62,15 +63,15 @@ namespace Battleships.Inputs
 				}
 				catch (OverflowException e)
 				{
-					return (false, "Mimo rozsah " + min + " " + max);
+					return (false, ContentManager.GetTranslation(TranslationKey.OutOfRange));
 				}
 				catch (Exception e)
 				{
-					return (false, "Neni cislo");
+					return (false, ContentManager.GetTranslation(TranslationKey.NaN));
 				}
 				//Kontrola hodnoty
-				if (value < min) return (false, "Moc male " + min);
-				if (value > max) return (false, "Moc velke " + max);
+				if (value < min) return (false, String.Format(ContentManager.GetTranslation(TranslationKey.TooSmallNumber), min));
+				if (value > max) return (false, String.Format(ContentManager.GetTranslation(TranslationKey.TooBigNumber), max));
 				//Hodnota je platna
 				return (true, default);
 			});
@@ -79,7 +80,7 @@ namespace Battleships.Inputs
 			return int.Parse(response);
 		}
 		//Vstup pro vyber z moznosti
-		public static T SelectionInput<T>(string question, IEnumerable<T> options)
+		public static T SelectionInput<T>(TranslationKey questionTranslationKey, IEnumerable<T> options)
 		{
 			//Celkovy pocet moznosti
 			int optionsCount = options.Count();
@@ -89,7 +90,7 @@ namespace Battleships.Inputs
 			Console.CursorVisible = false;
 
 			//Vypsani otazky
-			InputManager.PrintQuestion(question, false);
+			InputManager.PrintQuestion(ContentManager.GetTranslation(questionTranslationKey), false);
 			//Vypsani vsech moznosti
 			foreach (T option in options) InputManager.PrintOption(option.ToString());
 			//Aktualne vybrana moznost
