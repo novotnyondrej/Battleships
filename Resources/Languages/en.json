@@ -3,6 +3,22 @@
 
 	"Unknown": "Unknown translation",
 	"Undefined": "Undefined translation key: \"{0}\"",
+	"Not available": "Not available",
+
+	"Back": "Back to {0}",
+	"Exit": "Exit",
+	"NextPage": "Next Page",
+	"PreviousPage": "Previous Page",
+
+	"MainMenu": "Main Menu",
+	"NewGame": "New Game",
+	"LoadGame": "Load Game",
+	"View": "View",
+	"Settings": "Settings",
+	"ViewPlayers": "Players",
+	"ViewGames": "Games",
+
+	"NewPlayer": "New Player",
 
 	"TextTooShort": "Must be at least {0} characters long",
 	"TextTooLong": "Must not be longer than {0} characters",

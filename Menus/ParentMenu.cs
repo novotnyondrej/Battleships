@@ -39,30 +39,27 @@ namespace Battleships.Menus
 			//Nacteni dostupnosti moznosti
 			List<(bool available, TranslationKey reasonTranslationKey)> availability = Options.Select((option) => option.Availability()).ToList();
 			//Pridani moznosti pro vraceni se zpet
-			if (HasParent)
-			{
-				options.Insert(0, ContentManager.GetTranslation(TranslationKey.Back));
-				availability.Insert(0, Parent.Availability());
-			}
-			else
-			{
-				options.Add(ContentManager.GetTranslation(TranslationKey.Exit));
-				availability.Add((true, TranslationKey.Unknown));
-			}
+			options.Add(
+				HasParent
+				? String.Format(ContentManager.GetTranslation(TranslationKey.Back), Parent.Name)
+				: ContentManager.GetTranslation(TranslationKey.Exit)
+			);
+			availability.Add(HasParent ? Parent.Availability() : (true, TranslationKey.Unknown));
+			
 			int realOptionsCount = Options.Count();
 			int index = 0;
 			//Dokud neni konec tak zobrazovat menu
 			do
 			{
 				//Ziskani volby
-				index = Input.SelectionInput<string>(TranslationKey.Unknown, options, index, availability);
-				if ((!HasParent && index < realOptionsCount) || (HasParent && index > 0))
+				index = Input.SelectionInput(NameTranslationKey ?? TranslationKey.Unknown, options, index, availability);
+				if (index >= 0 && index < realOptionsCount)
 				{
 					//Zobrazeni potomka
-					Options.ElementAt(!HasParent ? index : index - 1).Show();
+					Options.ElementAt(index).Show();
 				}
 			}
-			while ((!HasParent && index < realOptionsCount) || (HasParent && index > 0));
+			while (index >= 0 && index < realOptionsCount);
 		}
 	}
 }

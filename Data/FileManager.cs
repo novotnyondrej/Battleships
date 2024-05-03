@@ -13,6 +13,10 @@ namespace Battleships.Data
 	//Trida pro nacitani a ukladani slozek a souboru
 	static class FileManager
 	{
+		//Misto, kam se budou ukladat uzivatelska data
+		public static string SaveLocation { get => Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "\\AppData\\Local\\BattleshipsNovoton19\\"; }
+		
+		
 		//Ziska vsechen obsah souboru, ktery se nachazi ve zdrojich
 		public static string? GetResource(string resourceName)
 		{
@@ -60,6 +64,24 @@ namespace Battleships.Data
 				resources[resourceName + (includeExtension ? '.' + extension : "")] = GetResource(fullResourceName);
 			}
 			return resources;
+		}
+		
+		//Nacte soubor z mista ukladani
+		public static string LoadSaveFile(string fileName)
+		{
+			//Ziskani cesty k souboru
+			string filePath = SaveLocation + fileName;
+			//Kontrola existence souboru
+			if (File.Exists(filePath)) return default;
+			try
+			{
+				//Cteni vsech dat ze souboru
+				return File.ReadAllText(filePath);
+			}
+			catch (Exception e)
+			{
+				return default;
+			}
 		}
 	}
 }

@@ -7,6 +7,7 @@ using Battleships.Inputs.Controls;
 using Battleships.Content;
 using Battleships.Data;
 using Battleships.Menus;
+using Battleships.Menus.ObjectMenus;
 using System.Linq;
 
 //Straveny cas: 19h
@@ -28,18 +29,21 @@ namespace Battleships
 			//Input.TextInput(TranslationKey.Undefined, 222, 22);
 			//Console.WriteLine(DataManager.DeserializeJson<string>("\"test\""));
 			ParentMenu menu = new(
-				TranslationKey.Unknown,
+				TranslationKey.MainMenu,
 				new List<IMenu>()
 				{
-					new ParentMenu(null, Enumerable.Empty<IMenu>()),
-					new ParentMenu(TranslationKey.Unknown, Enumerable.Empty<IMenu>(), () => (false, TranslationKey.NaN)),
-					new ParentMenu(TranslationKey.Unknown, new List<IMenu>()
+					new ParentMenu(TranslationKey.NewGame, Enumerable.Empty<IMenu>()),
+					new ParentMenu(TranslationKey.LoadGame, Enumerable.Empty<IMenu>()),
+					new ParentMenu(TranslationKey.View, new List<IMenu>()
 					{
-						new ParentMenu(TranslationKey.Unknown, Enumerable.Empty<IMenu>())
-					})
+						new PaginableMenu<IPlayer>(TranslationKey.ViewPlayers, () => new List<IPlayer>() { new Player() }, new PlayerMenu()),
+						new ParentMenu(TranslationKey.ViewGames, Enumerable.Empty<IMenu>())
+					}),
+					new ParentMenu(TranslationKey.Settings, Enumerable.Empty<IMenu>())
 				}
 			);
 			menu.Show();
+			Console.WriteLine(FileManager.SaveLocation);
 		}
 	}
 }

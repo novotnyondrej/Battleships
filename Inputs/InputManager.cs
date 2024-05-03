@@ -355,7 +355,7 @@ namespace Battleships.Inputs
 			return result.Trim();
 		}
 		//Precte dalsi charakter
-		public static ConsoleKeyInfo ReadKey() => Console.ReadKey();
+		public static ConsoleKeyInfo ReadKey(bool noDisplay = false) => Console.ReadKey(noDisplay);
 		//Ziska vstup, ktery nalezi urcite skupine
 		public static Control GetControlOfGroup(ControlGroup group, byte maximumAttempts = 16)
 		{
@@ -368,7 +368,7 @@ namespace Battleships.Inputs
 			do
 			{
 				//Precteni znaku
-				result = ControlManager.KeyToControlInGroup(ReadKey().Key, group);
+				result = ControlManager.KeyToControlInGroup(ReadKey(true).Key, group);
 				attempts++;
 			}
 			while (result == Control.Unknown && (maximumAttempts <= 0 || attempts < maximumAttempts));
