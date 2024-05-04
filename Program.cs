@@ -9,8 +9,9 @@ using Battleships.Data;
 using Battleships.Menus;
 using Battleships.Menus.ObjectMenus;
 using System.Linq;
+using Battleships.Global;
 
-//Straveny cas: 19h
+//Straveny cas: 21h
 //https://github.com/novotnyondrej/Battleships
 namespace Battleships
 {
@@ -36,14 +37,66 @@ namespace Battleships
 					new ParentMenu(TranslationKey.LoadGame, Enumerable.Empty<IMenu>()),
 					new ParentMenu(TranslationKey.View, new List<IMenu>()
 					{
-						new PaginableMenu<IPlayer>(TranslationKey.ViewPlayers, () => new List<IPlayer>() { new Player() }, new PlayerMenu()),
-						new ParentMenu(TranslationKey.ViewGames, Enumerable.Empty<IMenu>())
+						new PaginableMenu<Player>(TranslationKey.ViewPlayers, () => GlobalVariables.Players, new PlayerMenu()),
+						new PaginableMenu<Game>(TranslationKey.ViewGames, () => GlobalVariables.Games, new GameMenu())
 					}),
-					new ParentMenu(TranslationKey.Settings, Enumerable.Empty<IMenu>())
+					new ParentMenu(TranslationKey.Settings, Enumerable.Empty<IMenu>()),
+					new ParentMenu(TranslationKey.Help, new List<IMenu>()
+					{
+						new ParentMenu(TranslationKey.Controls, new List<IMenu>()
+						{
+							new MessageMenu(TranslationKey.MenuNavigation, TranslationKey.MenuNavigationText, new string[]{
+								ControlManager.GetControlAsString(Control.Up),
+								ControlManager.GetControlAsString(Control.Down),
+								InputManager.SelectionColor.ToString(),
+								ControlManager.GetControlAsString(Control.Confirm),
+								String.Format(ContentManager.GetTranslation(TranslationKey.Back), "[Menu]"),
+								ContentManager.GetTranslation(TranslationKey.Exit),
+								ControlManager.GetControlAsString(Control.Cancel)
+							}),
+							new ParentMenu(TranslationKey.Inputs, new List<IMenu>()
+							{
+								new MessageMenu(TranslationKey.TextInputs, TranslationKey.TextInputsText, new string[]
+								{
+									ControlManager.GetControlAsString(Control.TextInputLeft),
+									ControlManager.GetControlAsString(Control.TextInputRight),
+									ControlManager.GetControlAsString(Control.TextInputUp),
+									ControlManager.GetControlAsString(Control.TextInputDown),
+									ControlManager.GetControlAsString(Control.Back),
+									ControlManager.GetControlAsString(Control.Delete),
+									ControlManager.GetControlAsString(Control.Confirm),
+									ControlManager.GetControlAsString(Control.TextInputCancel)
+								}),
+								new MessageMenu(TranslationKey.NumberInputs, TranslationKey.NumberInputsText, new string[]
+								{
+									ControlManager.GetControlAsString(Control.TextInputLeft),
+									ControlManager.GetControlAsString(Control.TextInputRight),
+									ControlManager.GetControlAsString(Control.TextInputUp),
+									ControlManager.GetControlAsString(Control.TextInputDown),
+									ControlManager.GetControlAsString(Control.Back),
+									ControlManager.GetControlAsString(Control.Delete),
+									ControlManager.GetControlAsString(Control.Confirm),
+									ControlManager.GetControlAsString(Control.TextInputCancel)
+								}),
+								new MessageMenu(TranslationKey.SelectionInputs, TranslationKey.SelectionInputsText, new string[]
+								{
+									ControlManager.GetControlAsString(Control.Up),
+									ControlManager.GetControlAsString(Control.Down),
+									ControlManager.GetControlAsString(Control.Right),
+									ContentManager.GetTranslation(TranslationKey.NextPage),
+									ControlManager.GetControlAsString(Control.Left),
+									ContentManager.GetTranslation(TranslationKey.PreviousPage),
+									InputManager.SelectionColor.ToString(),
+									ControlManager.GetControlAsString(Control.Confirm),
+									ControlManager.GetControlAsString(Control.Cancel)
+								})
+							})
+						})
+					})
 				}
 			);
 			menu.Show();
-			Console.WriteLine(FileManager.SaveLocation);
+			//Console.WriteLine(FileManager.SaveLocation);
 		}
 	}
 }

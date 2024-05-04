@@ -3,7 +3,7 @@
 
 	"Unknown": "Unknown translation",
 	"Undefined": "Undefined translation key: \"{0}\"",
-	"Not available": "Not available",
+	"AnyKeyToContinue": "<SelectionColor>> Press any key to continue<SelectionColor>",
 
 	"Back": "Back to {0}",
 	"Exit": "Exit",
@@ -14,9 +14,21 @@
 	"NewGame": "New Game",
 	"LoadGame": "Load Game",
 	"View": "View",
-	"Settings": "Settings",
 	"ViewPlayers": "Players",
 	"ViewGames": "Games",
+	"Settings": "Settings",
+	"Help": "Help",
+	"Controls": "Controls",
+	"MenuNavigation": "Menu navigation",
+	"Inputs": "User inputs",
+	"TextInputs": "Text inputs",
+	"NumberInputs": "Number inputs",
+	"SelectionInputs": "Selection inputs",
+
+	"MenuNavigationText": "<SelectionColor>Menu navigation</SelectionColor>\nUse menu to navigate to different sections of the application.\n\n<SelectionColor>1) Navigating to menu items</SelectionColor>\n > Press <ReasonColor>{0}</ReasonColor> on your keyboard to go <ReasonColor>UP</ReasonColor> one item.\n > Press <ReasonColor>{1}</ReasonColor> on your keyboard to go <ReasonColor>DOWN</ReasonColor> one item.\n > The currently selected item will have <SelectionColor>{2}</SelectionColor> color.\n\n<SelectionColor>2) Selecting menu items</SelectionColor>\n > To select menu item, press <ReasonColor>{3}</ReasonColor> on your keyboard.\n\n<SelectionColor>3) Navigating back</SelectionColor>\n > To go up one layer, navigate to the item \"<SelectionColor>{4}</SelectionColor>\" or \"<SelectionColor>{5}</SelectionColor>\", typically at the end of the list.\n > Alternatively, press <ReasonColor>{6}</ReasonColor> on your keyboard.",
+	"TextInputsText": "<SelectionColor>Text Inputs</SelectionColor>\nUser inputs that give the user opportunity to enter a text.\n\n<SelectionColor>1) Entering text</SelectionColor>\n > Start entering text by pressing keyboard keys.\n\n<SelectionColor>2) Navigating text</SelectionColor>\n > Press <ReasonColor>{0}</ReasonColor> to go <ReasonColor>LEFT</ReasonColor> one character in your input field.\n > Press <ReasonColor>{1}</ReasonColor> to go <ReasonColor>RIGHT</ReasonColor> one character in your input field.\n > Press <ReasonColor>{2}</ReasonColor> to go <ReasonColor>UP</ReasonColor> one row in your input field, if your answer has more than one row.\n > Press <ReasonColor>{3}</ReasonColor> to go <ReasonColor>DOWN</ReasonColor> one row in your input field, if your answer has more than one row.\n\n<SelectionColor>3) Input correction</SelectionColor>\n > Press <ReasonColor>{4}</ReasonColor> to remove one character before your cursor in the input field.\n > Press <ReasonColor>{5}</ReasonColor> to remove one character afer your cursor in the input field.\n\n<SelectionColor>4) Input termination</SelectionColor>\n > Press <ReasonColor>{6}</ReasonColor> to <ReasonColor>CONFIRM</ReasonColor> your input.\n > Press <ReasonColor>{7}</ReasonColor> to <ReasonColor>CANCEL</ReasonColor> your input.",
+	"NumberInputsText": "<SelectionColor>Number Inptus</SelectionColor>\nWhole number inputs.\n\n<SelectionColor>1) Entering a number</SelectionColor>\n > Start entering a number by pressing number keys on your keyboard.\n\n<SelectionColor>2) Navigating text</SelectionColor>\n > Press <ReasonColor>{0}</ReasonColor> to go <ReasonColor>LEFT</ReasonColor> one character in your input field.\n > Press <ReasonColor>{1}</ReasonColor> to go <ReasonColor>RIGHT</ReasonColor> one character in your input field.\n > Press <ReasonColor>{2}</ReasonColor> to go <ReasonColor>UP</ReasonColor> one row in your input field, if your answer has more than one row.\n > Press <ReasonColor>{3}</ReasonColor> to go <ReasonColor>DOWN</ReasonColor> one row in your input field, if your answer has more than one row.\n\n<SelectionColor>3) Input correction</SelectionColor>\n > Press <ReasonColor>{4}</ReasonColor> to remove one character before your cursor in the input field.\n > Press <ReasonColor>{5}</ReasonColor> to remove one character afer your cursor in the input field.\n\n<SelectionColor>4) Input termination</SelectionColor>\n > Press <ReasonColor>{6}</ReasonColor> to <ReasonColor>CONFIRM</ReasonColor> your input.\n > Press <ReasonColor>{7}</ReasonColor> to <ReasonColor>CANCEL</ReasonColor> your input.",
+	"SelectionInputsText": "<SelectionColor>Selection inputs</SelectionColor>\nInputs that let the user decide between multiple options.\n\n<SelectionColor>1) Navigating to different items</SelectionColor>\n > Press <ReasonColor>{0}</ReasonColor> on your keyboard to go <ReasonColor>UP</ReasonColor> one item.\n > Press <ReasonColor>{1}</ReasonColor> on your keyboard to go <ReasonColor>DOWN</ReasonColor> one item.\n > If the list has more than one page, press <ReasonColor>{2}</ReasonColor> on your keyboard to go to the <ReasonColor>NEXT PAGE</ReasonColor>. Alternatively you can navigate to the \"<SelectionColor>{3}</SelectionColor>\" item.\n > If the list has more than one page, press <ReasonColor>{4}</ReasonColor> on your keyboad to go to the <ReasonColor>PREVIOUS PAGE</ReasonColor>. Alternatively you can navigate to the \"<SelectionColor>{5}</SelectionColor>\" item.\n > The currently selected item will have <SelectionColor>{6}</SelectionColor> color.\n\n<SelectionColor>2) Input termination</SelectionColor>\n > Press <ReasonColor>{7}</ReasonColor> to <ReasonColor>CONFIRM</ReasonColor> your input.\n > Press <ReasonColor>{8}</ReasonColor> to <ReasonColor>CANCEL</ReasonColor> your input.",
 
 	"NewPlayer": "New Player",
 

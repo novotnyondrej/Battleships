@@ -27,7 +27,7 @@ namespace Battleships.Menus
 		//Menu pro vybrany objekt
 		public IObjectMenu<OfType> ObjectMenu { get; }
 
-		public PaginableMenu(TranslationKey? nameTranslationKey, Func<IEnumerable<OfType>> optionsFunction, IObjectMenu<OfType> objectMenu, Func<(bool available, TranslationKey reaonTranslationKey)> availabilityFunction = default, int pageSize = 10)
+		public PaginableMenu(TranslationKey? nameTranslationKey, Func<IEnumerable<OfType>> optionsFunction, IObjectMenu<OfType> objectMenu, Func<(bool available, TranslationKey reaonTranslationKey)> availabilityFunction = default, int pageSize = 5)
 		{
 			NameTranslationKey = nameTranslationKey;
 			AvailabilityFunction = availabilityFunction;
@@ -38,6 +38,10 @@ namespace Battleships.Menus
 		//Zobrazi uzivateli menu
 		public void Show()
 		{
+			/*Input.ObjectSelectionInput<OfType>(
+				NameTranslationKey ?? TranslationKey.Unknown,
+				OptionsFunction()
+			);
 			//Nacteni moznosti jako texty
 			IEnumerable<OfType> objects = OptionsFunction();
 			List<string> options = objects.Select((option) => option.ToString()).ToList();
@@ -51,13 +55,13 @@ namespace Battleships.Menus
 			do
 			{
 				//Ziskani dalsi stranky
-				List<string> pageOptions = options.GetRange(pageIndex * PageSize, pageIndex + 1 == pagesCount ? realOptionsCount - pageIndex * PageSize : PageSize);
+				List<string> pageOptions = (!options.Any() ? new() : options.GetRange(pageIndex * PageSize, pageIndex + 1 == pagesCount ? realOptionsCount - pageIndex * PageSize : PageSize));
 				int realPageOptionsCount = pageOptions.Count;
 
 				//Pridani moznosti pro novy objekt
 				pageOptions.Insert(0, ObjectMenu.Name);
 				//Pridani moznosti pro nasledujici a predchozi stranku
-				if (pageIndex > 0) pageOptions.Add(ContentManager.GetTranslation(TranslationKey.PreviousPage));
+				if (pageIndex > 0) pageOptions.Insert(1, ContentManager.GetTranslation(TranslationKey.PreviousPage));
 				if (pageIndex + 1 < pagesCount) pageOptions.Add(ContentManager.GetTranslation(TranslationKey.NextPage));
 				//Pridani moznosti pro vraceni se zpet
 				pageOptions.Add(
@@ -74,7 +78,7 @@ namespace Battleships.Menus
 					//Vytvoreni noveho objktu
 					ObjectMenu.Show();
 				}
-				else if (index > 0 && index - 1 < realPageOptionsCount)
+				else if ((pageIndex > 0 ? index > 1 : index > 0) && index - 1 < realPageOptionsCount)
 				{
 					//Zobrazeni menu pro objekt
 					ObjectMenu.Show(objects.ElementAt(pageIndex * PageSize + index - 1));
@@ -82,14 +86,25 @@ namespace Battleships.Menus
 				else
 				{
 					//Akce
-					if (pageIndex > 0 && index - 1 == realPageOptionsCount) pageIndex--;
-					else if (pageIndex + 1 < pagesCount && index == pageOptionsCount) pageIndex++;
-					else if (index < 0 || index + 1 == pageOptionsCount) end = true;
-					//Reset indexu
-					index = 1;
+					if (pageIndex > 0 && index == 1)
+					{
+						pageIndex--;
+						//Reset indexu
+						index = (pageIndex > 0 ? 1 : 0) + PageSize + 1;
+					}
+					else if (pageIndex + 1 < pagesCount && index + 2 == pageOptionsCount)
+					{
+						pageIndex++;
+						//Reset indexu
+						index = 1;
+					}
+					else if (index < 0 || index + 1 == pageOptionsCount)
+					{
+						end = true;
+					}
 				}
 			}
-			while (!end);
+			while (!end);*/
 		}
 	}
 }

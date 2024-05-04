@@ -30,7 +30,8 @@ namespace Battleships.Inputs.Controls
 		private static Dictionary<ControlGroup, IEnumerable<Control>> _ControlGroups = new()
 		{
 			{ ControlGroup.TextInput, new List<Control>() { Control.Back, Control.Delete, Control.Confirm, Control.TextInputCancel, Control.TextInputUp, Control.TextInputRight, Control.TextInputDown, Control.TextInputLeft } },
-			{ ControlGroup.SelectionInput, new List<Control>() { Control.Cancel, Control.Confirm, Control.Up, Control.Down } }
+			{ ControlGroup.SelectionInput, new List<Control>() { Control.Cancel, Control.Confirm, Control.Up, Control.Down } },
+			{ ControlGroup.PaginableSelectionInput, new List<Control>() { Control.Cancel, Control.Confirm, Control.Up, Control.Right, Control.Down, Control.Left } }
 		};
 		public static Dictionary<ControlGroup, IEnumerable<Control>> ControlGroups => _ControlGroups;
 
@@ -49,6 +50,14 @@ namespace Battleships.Inputs.Controls
 			return ControlGroups[group].FirstOrDefault(
 				control => HasControl(control) && ControlTranslationMap[control].Contains(key)
 			);
+		}
+		public static string GetControlAsString(Control control)
+		{
+			if (!HasControl(control)) return default;
+
+			return String.Join(", ", ControlTranslationMap[control].Select(
+				(key) => key.ToString()
+			));
 		}
 	}
 }

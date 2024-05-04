@@ -10,6 +10,7 @@ namespace Battleships.Inputs.Controls
 	{
 		TextInput = 0,
 		SelectionInput = 1,
-		ShipPlacement = 2
+		PaginableSelectionInput = 2,
+		ShipPlacement = 3
 	}
 }

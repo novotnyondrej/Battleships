@@ -35,24 +35,34 @@ namespace Battleships.Menus
 		public void Show()
 		{
 			//Nacteni moznosti jako texty
-			List<string> options = Options.Select((option) => option.Name).ToList();
-			//Nacteni dostupnosti moznosti
-			List<(bool available, TranslationKey reasonTranslationKey)> availability = Options.Select((option) => option.Availability()).ToList();
+			List<(string option, bool available, TranslationKey reasonTranslationKey)> options = Options.Select(
+				(option) =>
+				{
+					//Ziskani dostupnosti
+					(bool available, TranslationKey reasonTranslationKey) = option.Availability();
+					//Vraceni informaci o moznosti
+					return (option.Name, available, reasonTranslationKey);
+				}
+			).ToList();
+			//Pocet vsech moznosti
+			int realOptionsCount = options.Count;
 			//Pridani moznosti pro vraceni se zpet
 			options.Add(
-				HasParent
-				? String.Format(ContentManager.GetTranslation(TranslationKey.Back), Parent.Name)
-				: ContentManager.GetTranslation(TranslationKey.Exit)
+				(
+					HasParent
+						? String.Format(ContentManager.GetTranslation(TranslationKey.Back), Parent.Name)
+						: ContentManager.GetTranslation(TranslationKey.Exit),
+					true,
+					TranslationKey.Unknown
+				)
 			);
-			availability.Add(HasParent ? Parent.Availability() : (true, TranslationKey.Unknown));
-			
-			int realOptionsCount = Options.Count();
+			//Index vybrane moznosti
 			int index = 0;
 			//Dokud neni konec tak zobrazovat menu
 			do
 			{
 				//Ziskani volby
-				index = Input.SelectionInput(NameTranslationKey ?? TranslationKey.Unknown, options, index, availability);
+				index = Input.SelectionInput(NameTranslationKey ?? TranslationKey.Unknown, options, index);
 				if (index >= 0 && index < realOptionsCount)
 				{
 					//Zobrazeni potomka

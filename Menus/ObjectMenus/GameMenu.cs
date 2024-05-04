@@ -3,13 +3,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Collections.Generic;
-using Battleships.BattleshipsGame.Players;
+using Battleships.BattleshipsGame;
 using Battleships.Content;
 using Battleships.Inputs;
 
 namespace Battleships.Menus.ObjectMenus
 {
-	class PlayerMenu : IObjectMenu<Player>
+	class GameMenu : IObjectMenu<Game>
 	{
 		//Pripadny preklad nazvu menu
 		public TranslationKey? NameTranslationKey { get; }
@@ -17,9 +17,9 @@ namespace Battleships.Menus.ObjectMenus
 		//Vyhodnoti, zda je tato sekce dostupna
 		public Func<(bool available, TranslationKey reasonTranslationKey)> AvailabilityFunction { get; }
 
-		public PlayerMenu()
+		public GameMenu()
 		{
-			NameTranslationKey = TranslationKey.NewPlayer;
+			NameTranslationKey = TranslationKey.NewGame;
 		}
 		//Rodicovsky element
 		public IMenu Parent { get; set; }
@@ -30,15 +30,15 @@ namespace Battleships.Menus.ObjectMenus
 			Input.TextInput(TranslationKey.EnterPlayerName, 5, 20);
 		}
 		//Zobrazi uzivateli menu pro hrace
-		public void Show(Player player)
+		public void Show(Game game)
 		{
-			if (player == default)
+			if (game == default)
 			{
 				Show();
 				return;
 			}
 			Console.Clear();
-			Console.WriteLine("player");
+			Console.WriteLine("game");
 			Console.ReadKey();
 			return;
 		}

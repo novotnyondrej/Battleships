@@ -90,15 +90,76 @@ namespace Battleships.Inputs
 
 		//Vypisovani textu
 		//Vypise text
-		private static void Write(string text)
+		public static void Write(string text, ConsoleColor? color = null)
 		{
-			bool original = Console.CursorVisible;
+			text = text.Replace("SelectionColor>", SelectionColor.ToString() + ">");
+			text = text.Replace("ReasonColor>", ReasonColor.ToString() + ">");
+
+			bool visible = Console.CursorVisible;
+			//Barvy pouzite pri vypisu
+			ConsoleColor originalColor = Console.ForegroundColor;
+			List<ConsoleColor> colorHistory = new() { color ?? Console.ForegroundColor };
 			Console.CursorVisible = false;
-			Console.Write(text);
-			Console.CursorVisible = original;
+			Console.ForegroundColor = color ?? Console.ForegroundColor;
+
+			//Psani textu dokud je porad co psat
+			while (text.Length > 0)
+			{
+				//Jak velka cast textu se ma vypsat
+				int writeUntil = text.Length;
+				//Nalezeni dalsi definice barvy
+				int colorStart = text.IndexOf('<');
+				int colorEnd = text.IndexOf('>', colorStart + 1);
+				///Pokud definice existuje, tak se pokusime ziskat novou barvu
+				if (colorStart >= 0 && colorEnd > 0)
+				{
+					//Ziskani barvy jako string
+					string colorText = text[(colorStart + 1)..colorEnd];
+					//Zda se v tento moment ma barva ukoncit
+					bool endColor = colorText.StartsWith('/');
+					//Pokus o rozlusteni barvy
+					bool isColor = Enum.TryParse(endColor ? colorText[1..] : colorText, out ConsoleColor newColor);
+					//Pokud barva existuje, tak zmenit
+					if (isColor)
+					{
+						//Vypsani textu az po definici
+						Console.Write(text[..colorStart]);
+						//Pristi vypis probehne az od konce definice
+						text = text[(colorEnd + 1)..];
+
+						//Pokud je konec barvy, pak nastavime barvu zpet na original pred aktualni barvou
+						if (endColor)
+						{
+							//Kontrola existence barvy (zaroven index nemuze byt 0 protoze prvni barva je vzdy uplne puvodni barva pred vypisem)
+							if (colorHistory.LastIndexOf(newColor) < 1) continue;
+							//Odebrani barvy z historie
+							colorHistory = colorHistory.GetRange(0, colorHistory.LastIndexOf(newColor));
+							//Nastaveni barvy na posledni barvu pred aktualni barvou
+							Console.ForegroundColor = colorHistory.Last();
+						}
+						else
+						{
+							//Zmena barvy na pzoadovanou barvu
+							Console.ForegroundColor = newColor;
+							//Pridani barvy do historie
+							colorHistory.Add(newColor);
+						}
+						continue;
+					}
+					else writeUntil = colorEnd + 1;
+				}
+				else if (colorStart >= 0) writeUntil = colorStart + 1;
+				
+				//Vypsani casti textu
+				Console.Write(text[..writeUntil]);
+				text = text[writeUntil..];
+			}
+			Console.CursorVisible = visible;
+			//Navraceni barvy na original
+			Console.ForegroundColor = originalColor;
 		}
 		//Vypise text a zalomi radek
-		private static void WriteLine(string text) => Write(text + "\n");
+		public static void WriteLine(string text, ConsoleColor? color = null) => Write(text + "\n", color);
 		//Vypise text a zbyvajici misto, ktere zbyva k danemu kurzoru, vyplni mezerami
 		private static void WriteUntilCursor(string text, (int Left, int Top) upToCursor)
 		{
@@ -196,6 +257,7 @@ namespace Battleships.Inputs
 				Console.ForegroundColor = ReasonColor;
 				Write(" (" + reason + ")");
 			}
+			Write("\n");
 			Console.ForegroundColor = original;
 		}
 		//Vybere moznost
@@ -355,7 +417,14 @@ namespace Battleships.Inputs
 			return result.Trim();
 		}
 		//Precte dalsi charakter
-		public static ConsoleKeyInfo ReadKey(bool noDisplay = false) => Console.ReadKey(noDisplay);
+		public static ConsoleKeyInfo ReadKey(bool showCursor = true)
+		{
+			bool original = Console.CursorVisible;
+			Console.CursorVisible = showCursor;
+			ConsoleKeyInfo result = Console.ReadKey();
+			Console.CursorVisible = original;
+			return result;
+		}
 		//Ziska vstup, ktery nalezi urcite skupine
 		public static Control GetControlOfGroup(ControlGroup group, byte maximumAttempts = 16)
 		{
@@ -368,7 +437,7 @@ namespace Battleships.Inputs
 			do
 			{
 				//Precteni znaku
-				result = ControlManager.KeyToControlInGroup(ReadKey(true).Key, group);
+				result = ControlManager.KeyToControlInGroup(ReadKey(false).Key, group);
 				attempts++;
 			}
 			while (result == Control.Unknown && (maximumAttempts <= 0 || attempts < maximumAttempts));
