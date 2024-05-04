@@ -229,6 +229,8 @@ namespace Battleships.Inputs
 		{
 			//Vypsani znaku pro vstup
 			PrintInputCharacter(forceNewLine, selected, savePosition);
+			option = option.Replace("\n", "\n" + String.Join("", Enumerable.Repeat(" ", InputCharacter.Length)));
+			reason = reason.Replace("\n", "\n" + String.Join("", Enumerable.Repeat(" ", InputCharacter.Length)));
 			
 			Options.Add((option, available, reason));
 			ReprintOption(Options.Count - 1, selected, forceNewLine);

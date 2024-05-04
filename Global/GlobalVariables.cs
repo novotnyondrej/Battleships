@@ -16,15 +16,20 @@ namespace Battleships.Global
 		public static string PlayersFileName => "Players.json";
 		public static string GamesFileName => "Games.json";
 
-		//Ulozeni hraci
-		public static IEnumerable<Player> Players;
-		public static IEnumerable<Game> Games;
+		//Ulozeni hraci a hry
+		private static List<Player> _Players;
+		private static List<Game> _Games;
+		public static IReadOnlyCollection<Player> Players => _Players.AsReadOnly();
+		public static IReadOnlyCollection<Game> Games => _Games.AsReadOnly();
 
 		static GlobalVariables()
 		{
-			Players = DataManager.DeserializeJson<IEnumerable<Player>>(FileManager.LoadSaveFile(PlayersFileName)) ?? Enumerable.Empty<Player>();
-			Games = DataManager.DeserializeJson<IEnumerable<Game>>(FileManager.LoadSaveFile(GamesFileName)) ?? Enumerable.Empty<Game>();
+			_Players = (DataManager.DeserializeJson<IEnumerable<Player>>(FileManager.LoadSaveFile(PlayersFileName)) ?? Enumerable.Empty<Player>()).ToList();
+			_Games = (DataManager.DeserializeJson<IEnumerable<Game>>(FileManager.LoadSaveFile(GamesFileName)) ?? Enumerable.Empty<Game>()).ToList();
 		}
-		
+		public static void AddPlayer(Player player)
+		{
+			_Players.Add(player);
+		}
 	}
 }

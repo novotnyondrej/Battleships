@@ -58,5 +58,10 @@ namespace Battleships.BattleshipsGame.Battleships
 			}
 			return totalPosition;
 		}
+		//Vrati textovou reprezentaci bitevni lode
+		public override string ToString()
+		{
+			return String.Join("", Enumerable.Repeat("X", (int)Size));
+		}
 	}
 }

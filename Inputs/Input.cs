@@ -15,7 +15,7 @@ namespace Battleships.Inputs
 		public static int SelectionInputPageSize => 5;
 
 		//Textovy vstup s minimalni a maximalni delkou textu
-		public static string? TextInput(TranslationKey questionTranslationKey, uint minLength = 0, uint maxLength = 0)
+		public static string? TextInput(TranslationKey questionTranslationKey, uint minLength = 0, uint maxLength = 0, Func<string, (bool valid, string message)> customValidation = null)
 		{
 			bool hasMinLength = minLength > 0;
 			bool hasMaxLength = maxLength > 0;
@@ -35,6 +35,8 @@ namespace Battleships.Inputs
 				//Kontrola delky textu
 				if (hasMinLength && response.Length < minLength) return (false, String.Format(ContentManager.GetTranslation(TranslationKey.TextTooShort), minLength));
 				if (hasMaxLength && response.Length > maxLength) return (false, String.Format(ContentManager.GetTranslation(TranslationKey.TextTooLong), maxLength));
+				//Vlastni validace
+				if (customValidation != null) return customValidation.Invoke(response);
 				//Text je platny
 				return (true, default);
 			});
@@ -131,7 +133,7 @@ namespace Battleships.Inputs
 		public static int SelectionInput(
 			TranslationKey questionTranslationKey,
 			IEnumerable<(string option, bool available, TranslationKey reasonTranslationKey)> options,
-			int selectedOptionIndex,
+			int selectedOptionIndex = 0,
 			ControlGroup? controlGroup = null,
 			Func<Control, int, int, (bool end, int selectedOptionIndex)> inputHandler = null)
 		{
@@ -141,6 +143,9 @@ namespace Battleships.Inputs
 			//Celkovy pocet moznosti
 			int optionsCount = options.Count();
 			if (optionsCount <= 0) return -1;
+
+			if (selectedOptionIndex < 0) selectedOptionIndex = 0;
+			if (selectedOptionIndex >= optionsCount) selectedOptionIndex = optionsCount - 1;
 			
 			bool visible = Console.CursorVisible;
 			Console.CursorVisible = false;
@@ -177,13 +182,30 @@ namespace Battleships.Inputs
 			Console.CursorVisible = visible;
 			return selectedOptionIndex;
 		}
+		//Zjednoduseny vstup pro vyber z moznosti kde se predpoklada ze jsou vsechny moznosti dostupne
+		public static int SelectionInput(
+			TranslationKey questionTranslationKey,
+			IEnumerable<string> options,
+			int selectedOptionIndex = 0,
+			ControlGroup? controlGroup = null,
+			Func<Control, int, int, (bool end, int selectedOptionIndex)> inputHandler = null
+		)
+		{
+			return SelectionInput(
+				questionTranslationKey,
+				options.Select((option) => (option, true, TranslationKey.Unknown)),
+				selectedOptionIndex,
+				controlGroup,
+				inputHandler
+			);
+		}
 		//Vstup pro vyber objektu z nabidky (strankovatelny)
 		public static OfType ObjectSelectionInput<OfType>(
 			TranslationKey questionTranslationKey,
 			Func<IEnumerable<OfType>> getObjects,
 			int selectedObjectIndex = 0,
 			Func<OfType, (bool available, TranslationKey reasonTranslationKey)> isObjectAvailable = null,
-			Func<(bool created, OfType obj)> createNewObject = null,
+			Func<OfType> createNewObject = null,
 			TranslationKey? newObjectTranslationKey = null
 		)
 		{
@@ -208,9 +230,13 @@ namespace Battleships.Inputs
 				pageIndex += pageChange;
 
 				//Ziskani moznosti pro tuto stranku
-				List<(string option, bool available, TranslationKey reasonTranslationKey)> pageOptions = objects.GetRange(
-					pageIndex * pageSize,
-					(pageIndex + 1 == pagesCount) ? objects.Count - pageIndex * pageSize : pageSize
+				List<(string option, bool available, TranslationKey reasonTranslationKey)> pageOptions = (
+					pagesCount == 0
+					? new()
+					: objects.GetRange(
+						pageIndex * pageSize,
+						(pageIndex + 1 == pagesCount) ? objects.Count - pageIndex * pageSize : pageSize
+					)
 				).Select(
 					(obj) =>
 					{
@@ -276,8 +302,8 @@ namespace Battleships.Inputs
 				else if (selectedOptionIndex == createObjectIndex)
 				{
 					//Vytvoreni objektu
-					(bool created, OfType obj) = createNewObject.Invoke();
-					if (created)
+					OfType obj = createNewObject.Invoke();
+					if (obj != null)
 					{
 						//Vraceni noveho objektu
 						Console.CursorVisible = visible;

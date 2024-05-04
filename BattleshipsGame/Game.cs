@@ -6,6 +6,9 @@ using System.Collections.Generic;
 using Battleships.BattleshipsGame.Players;
 using Battleships.BattleshipsGame.Battleships;
 using Battleships.BattleshipsGame.Battlefields;
+using Battleships.Global;
+using Battleships.Inputs;
+using Battleships.Content;
 
 namespace Battleships.BattleshipsGame
 {
@@ -47,24 +50,70 @@ namespace Battleships.BattleshipsGame
 		//Pokusi se vytvorit novou hru (na prani uzivatele lze tento proces zrusit)
 		public static Game Create(IPlayer challenger = default, IPlayer opponent = default)
 		{
-			//Pokud neexistuje vyzyvatel nebo oponent, bude pridelena umela inteligence
-			challenger ??= new AI();
-			opponent ??= new AI();
+			//Spusteni vyberu hrace
+			if (challenger == default)
+			{
+				//Vybrani primarniho hrace
+				challenger = Input.ObjectSelectionInput<Player>(
+					TranslationKey.SelectPlayer,
+					() => GlobalVariables.Players,
+					0,
+					null,
+					Player.Create,
+					TranslationKey.NewPlayer
+				);
+				//Pokud hrac neni nastaven, zrusit vytvareni
+				if (challenger == default) return default;
+			}
+			//Vyber oponenta
+			if (opponent == default)
+			{
+				//Zda uzivatel chce hrat proti pocitaci nebo hracovi
+				int decision = Input.SelectionInput(
+					TranslationKey.ChooseOpponentType,
+					new List<string>()
+					{
+						ContentManager.GetTranslation(TranslationKey.Player),
+						ContentManager.GetTranslation(TranslationKey.Computer)
+					}
+				);
+				//Kontrola rozhodnuti
+				if (decision == -1) return default;
+				else if (decision == 0)
+				{
+					//Chce hrat proti hracovi
+					//Vyber hrace
+					opponent = Input.ObjectSelectionInput<Player>(
+						TranslationKey.SelectPlayer,
+						() => GlobalVariables.Players,
+						0,
+						(Player selection) => (selection != challenger, TranslationKey.PlayerAlreadyTaken),
+						Player.Create,
+						TranslationKey.NewPlayer
+					);
+					//Pokud hrac neni nastaven, zrusit vytvareni
+					if (opponent == default) return default;
+				}
+				else
+				{
+					//Chce hrat proti pocitaci
+					opponent = new AI();
+				}
+			}
 
 			//Ziskani velikosti mapy
 			byte? unverifiedBattlefieldSize = challenger.GetBattlefieldSize(6, 16);
 			//Kontrola vysledku
-			if (unverifiedBattlefieldSize == null) return null;
+			if (unverifiedBattlefieldSize == null) return default;
 			//Prevod na jisty bajt
 			byte battlefieldSize = (byte)unverifiedBattlefieldSize;
-
+			
 			//Ziskani moznych sad lodi
 			IEnumerable<IReadOnlyDictionary<BattleshipSize, byte>> battleshipSets = EnemyBattlefield.GetAllBattleshipSets(battlefieldSize);
 			//Vybrani sady lodi
 			IReadOnlyDictionary<BattleshipSize, byte> battleshipSet = challenger.PickBattleshipSet(battleshipSets);
 			//Kontrola vysledku
-			if (battleshipSet == null) return null;
-
+			if (battleshipSet == null) return default;
 			//Vytvoreni bitevnich poli
 			Battlefield challengerBattlefield = new(battlefieldSize, null, battleshipSet);
 			Battlefield opponentBattlefield = new(battlefieldSize, null, battleshipSet);

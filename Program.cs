@@ -11,7 +11,7 @@ using Battleships.Menus.ObjectMenus;
 using System.Linq;
 using Battleships.Global;
 
-//Straveny cas: 21h
+//Straveny cas: 24h
 //https://github.com/novotnyondrej/Battleships
 namespace Battleships
 {
@@ -33,8 +33,8 @@ namespace Battleships
 				TranslationKey.MainMenu,
 				new List<IMenu>()
 				{
-					new ParentMenu(TranslationKey.NewGame, Enumerable.Empty<IMenu>()),
-					new ParentMenu(TranslationKey.LoadGame, Enumerable.Empty<IMenu>()),
+					new ActionMenu(TranslationKey.NewGame, () => Game.Create()),
+					new ParentMenu(TranslationKey.LoadGame, Enumerable.Empty<IMenu>(), () => (GlobalVariables.Games.Any(), TranslationKey.NoGames)),
 					new ParentMenu(TranslationKey.View, new List<IMenu>()
 					{
 						new PaginableMenu<Player>(TranslationKey.ViewPlayers, () => GlobalVariables.Players, new PlayerMenu()),

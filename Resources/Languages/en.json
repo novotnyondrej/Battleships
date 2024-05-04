@@ -31,6 +31,17 @@
 	"SelectionInputsText": "<SelectionColor>Selection inputs</SelectionColor>\nInputs that let the user decide between multiple options.\n\n<SelectionColor>1) Navigating to different items</SelectionColor>\n > Press <ReasonColor>{0}</ReasonColor> on your keyboard to go <ReasonColor>UP</ReasonColor> one item.\n > Press <ReasonColor>{1}</ReasonColor> on your keyboard to go <ReasonColor>DOWN</ReasonColor> one item.\n > If the list has more than one page, press <ReasonColor>{2}</ReasonColor> on your keyboard to go to the <ReasonColor>NEXT PAGE</ReasonColor>. Alternatively you can navigate to the \"<SelectionColor>{3}</SelectionColor>\" item.\n > If the list has more than one page, press <ReasonColor>{4}</ReasonColor> on your keyboad to go to the <ReasonColor>PREVIOUS PAGE</ReasonColor>. Alternatively you can navigate to the \"<SelectionColor>{5}</SelectionColor>\" item.\n > The currently selected item will have <SelectionColor>{6}</SelectionColor> color.\n\n<SelectionColor>2) Input termination</SelectionColor>\n > Press <ReasonColor>{7}</ReasonColor> to <ReasonColor>CONFIRM</ReasonColor> your input.\n > Press <ReasonColor>{8}</ReasonColor> to <ReasonColor>CANCEL</ReasonColor> your input.",
 
 	"NewPlayer": "New Player",
+	"NoGames": "No ongoing games found",
+	"SelectPlayer": "Select a player",
+	"ChooseOpponentType": "Do you want your opponent to be a player or computer?",
+	"Player": "Player",
+	"Computer": "Computer",
+	"PlayerAlreadyTaken": "Already taken",
+	"NameAlreadyTaken": "Name already taken",
+	"EnterPlayerName": "Enter player name",
+	"NoSpacesAllowed": "Must not contain spaces",
+	"EnterBattlefieldSize": "Enter battlefield size",
+	"SelectBattleshipSet": "Select battleship set",
 
 	"TextTooShort": "Must be at least {0} characters long",
 	"TextTooLong": "Must not be longer than {0} characters",

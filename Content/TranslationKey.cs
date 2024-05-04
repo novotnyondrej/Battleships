@@ -42,6 +42,17 @@ namespace Battleships.Content
 		NewPlayer = 41,
 
 		EnterPlayerName = 42,
+		NoGames = 43,
+		SelectPlayer = 44,
+		ChooseOpponentType = 45,
+		Player = 46,
+		Computer = 47,
+		PlayerAlreadyTaken = 48,
+		NameAlreadyTaken = 49,
+		NoSpacesAllowed = 491,
+		EnterBattlefieldSize = 492,
+		SelectBattleshipSet = 493,
+
 
 		TextTooShort = 50,
 		TextTooLong = 51,

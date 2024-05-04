@@ -85,8 +85,8 @@ namespace Battleships.BattleshipsGame.Battlefields
 				{
 					{ BattleshipSize.Carrier, 1 },
 					{ BattleshipSize.Battleship, 1 },
-					{ BattleshipSize.Submarine, 1 },
-					{ BattleshipSize.Cruiser, 1 },
+					{ BattleshipSize.Submarine, 2 },
+					//{ BattleshipSize.Cruiser, 1 },
 					{ BattleshipSize.PatrolBoat, 1 }
 				}
 			};
