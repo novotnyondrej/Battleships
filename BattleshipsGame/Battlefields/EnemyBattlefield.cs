@@ -66,7 +66,7 @@ namespace Battleships.BattleshipsGame.Battlefields
 		//Zda souradnice existuje
 		public bool CoordinateExists(byte x, byte y)
 		{
-			return x <= Width && y <= Width;
+			return x < Width && y < Height;
 		}
 		public Coordinate GetCoordinate(byte x, byte y)
 		{
@@ -75,6 +75,122 @@ namespace Battleships.BattleshipsGame.Battlefields
 			//Vraceni souradnice
 			return CoordinateMap.ElementAt(x).ElementAt(y);
 		}
+		//Ziska znak pro dane pole
+		public virtual string GetColorAtCoordinate(Coordinate coordinate)
+		{
+			if (_SunkenBattleships.Any((battleship) => battleship.TotalPosition.Contains(coordinate)))
+			{
+				//Tato souradnice patri potopene lodi
+				return "BackgroundDarkRed";
+			}
+			else if (_SunkenBattleships.Any((battleship) => battleship.TotalPosition.Any((position) => position.IsNeighborOf(coordinate))))
+			{
+				//Tato souradnice je v blizkosti potopene lodi
+				return "BackgroundDarkGray";
+			}
+			//Pokus o nalezeni pokusu o utok
+			KeyValuePair<Coordinate, AttackResult> attack = _AttackedCoordinates.FirstOrDefault((pair) => pair.Key == coordinate);
+			//Pokud utok neexistuje, pak vrati prazdne pole
+			return "";
+			if (attack.Value == AttackResult.Hit)
+			{
+				//Tato souradnice je soucasti nepotopene lodi
+				return "BackgroundRed";
+			}
+			return "";
+		}
+		//Prevede bitevni pole na text
+		public override string ToString()
+		{
+			return ToString(null, null);
+		}
+		public string ToString(
+			Coordinate selectedCoordinate = null,
+			IEnumerable<Coordinate> highlightedCoordinates = null,
+			ConsoleColor highlightColor = ConsoleColor.DarkBlue
+		)
+		{
+			//Vysledek
+			string result = "";
+			string columnCharacters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+			//Maximalni sirka zahlavi
+			int maximumHeaderWidth = Height.ToString().Length + 2;
+			//Nacteni hlavicky
+			if (selectedCoordinate != null) result += String.Join("", Enumerable.Repeat(" ", maximumHeaderWidth + 1 + selectedCoordinate.X * 2)) + "<BackgroundDarkGray>  </BackgroundDarkGray>" + String.Join("", Enumerable.Repeat(" ", (Width - 1 - selectedCoordinate.X) * 2));
+			else result += String.Join("", Enumerable.Repeat(" ", maximumHeaderWidth + 1 + Width * 2));
+			//Nacteni sloupcu
+			string columns = String.Join(" ", (columnCharacters[..Width]).ToCharArray()) + " ";
+			//Oznaceni sloupce
+			if (selectedCoordinate != null) columns = columns.Replace(columnCharacters[selectedCoordinate.X] + " ", "<BackgroundDarkGray>" + columnCharacters[selectedCoordinate.X] + " </BackgroundDarkGray>");
+			result += "\n" + String.Join("", Enumerable.Repeat(" ", maximumHeaderWidth)) + " " + columns;
+			//Nacteni oddelovace
+			string separator = String.Join("", Enumerable.Repeat("--", Width));
+			//Oznaceni sloupce
+			if (selectedCoordinate != null) separator = separator[..(selectedCoordinate.X * 2)] + "<BackgroundDarkGray>--</BackgroundDarkGray>" + separator[((selectedCoordinate.X + 1) * 2)..];
+			result += "\n" + String.Join("", Enumerable.Repeat(" ", maximumHeaderWidth)) + " " + separator;
+			//Nacitani policek
+			for (byte y = 0; y < Height; y++)
+			{
+				//Pridani zahlavi
+				string row = "\n" + (y + 1).ToString().PadLeft(maximumHeaderWidth, ' ') + "|";
+
+				if (selectedCoordinate != null && selectedCoordinate.Y == y)
+				{
+					row = "<BackgroundDarkGray>" + row + "</BackgroundDarkGray>";
+				}
+				//Pridani sloupcu
+				for (byte x = 0; x < Width; x++)
+				{
+					string character = "  ";
+					//Pokud je ve zvyrazneni tak zvyraznit
+					if (selectedCoordinate != null && highlightedCoordinates != null && highlightedCoordinates.Contains(GetCoordinate(x, y)))
+					{
+						character = "<Background" + highlightColor.ToString() + ">  </Background" + highlightColor.ToString() + ">";
+					}
+					else
+					{
+						//Ziskani znaku
+						string color = GetColorAtCoordinate(GetCoordinate(x, y));
+						//Pokud je radek nebo sloupec oznacen, pridame pozadi
+						if (selectedCoordinate != null && selectedCoordinate.Y == y && selectedCoordinate.X == x)
+						{
+							character = "<DarkGray>[]</DarkGray>";
+						}
+						else if (selectedCoordinate != null && selectedCoordinate.X == x)
+						{
+							character = "  ";
+							//character = "<" + color + "><DarkGray>[]</DarkGray></" + color + ">";
+						}
+						if (color.Length > 0)
+						{
+							character = "<" + color + ">" + character + "</" + color + ">";
+						}
+					}
+					row += character;
+				}
+				if (selectedCoordinate != null && selectedCoordinate.Y == y)
+				{
+					row += "<BackgroundDarkGray>|</BackgroundDarkGray>";
+				}
+				else
+				{
+					row += "|";
+				}
+				if (selectedCoordinate != null && selectedCoordinate.Y == y)
+				{
+					//row = "<BackgroundDarkGray>" + row + "</BackgroundDarkGray>";
+				}
+				result += row;
+			}
+			//Nacteni oddelovace
+			separator = String.Join("", Enumerable.Repeat("--", Width));
+			//Oznaceni sloupce
+			if (selectedCoordinate != null) separator = separator[..(selectedCoordinate.X * 2)] + "<BackgroundDarkGray>--</BackgroundDarkGray>" + separator[((selectedCoordinate.X + 1) * 2)..];
+			result += "\n" + String.Join("", Enumerable.Repeat(" ", maximumHeaderWidth)) + " " + separator;
+
+			return "<Gray>" + result + "<Gray>";
+		}
+
 		//Na zaklade velikosti mapy vygeneruje ruzne sady lodi
 		//Sada je serazena od nejvetsi lodi po tu nejmensi
 		public static IEnumerable<IReadOnlyDictionary<BattleshipSize, byte>> GetAllBattleshipSets(byte width, byte? height = null, bool generateFirstOnly = false)

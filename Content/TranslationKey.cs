@@ -52,6 +52,7 @@ namespace Battleships.Content
 		NoSpacesAllowed = 491,
 		EnterBattlefieldSize = 492,
 		SelectBattleshipSet = 493,
+		PlaceBattleship = 494,
 
 
 		TextTooShort = 50,

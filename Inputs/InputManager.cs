@@ -69,7 +69,7 @@ namespace Battleships.Inputs
 			Console.SetCursorPosition(original.Left, original.Top);
 		}
 		//Navrati kurzor na puvodni pozici, popr. vymaze vsechny charaktery mezi pocatecni a aktualni pozici
-		private static void RevertCursor((int Left, int Top) initial, bool clear = true)
+		public static void RevertCursor((int Left, int Top) initial, bool clear = true)
 		{
 			//Promazani vseho mezi pocatecni a aktualni pozici
 			if (clear) ClearBetween(Console.GetCursorPosition(), initial);
@@ -90,17 +90,21 @@ namespace Battleships.Inputs
 
 		//Vypisovani textu
 		//Vypise text
-		public static void Write(string text, ConsoleColor? color = null)
+		public static void Write(string text, ConsoleColor? foregroundColor = null, ConsoleColor? backgroundColor = null)
 		{
 			text = text.Replace("SelectionColor>", SelectionColor.ToString() + ">");
 			text = text.Replace("ReasonColor>", ReasonColor.ToString() + ">");
 
 			bool visible = Console.CursorVisible;
+			//Pocatecni barvy
+			ConsoleColor originalForegroundColor = Console.ForegroundColor;
+			ConsoleColor originalBackgroundColor = Console.BackgroundColor;
 			//Barvy pouzite pri vypisu
-			ConsoleColor originalColor = Console.ForegroundColor;
-			List<ConsoleColor> colorHistory = new() { color ?? Console.ForegroundColor };
+			List<ConsoleColor> foregroundColorHistory = new() { foregroundColor ?? Console.ForegroundColor };
+			List<ConsoleColor> backgroundColorHistory = new() { backgroundColor ?? Console.BackgroundColor };
 			Console.CursorVisible = false;
-			Console.ForegroundColor = color ?? Console.ForegroundColor;
+			Console.ForegroundColor = foregroundColor ?? Console.ForegroundColor;
+			Console.BackgroundColor = foregroundColor ?? Console.BackgroundColor;
 
 			//Psani textu dokud je porad co psat
 			while (text.Length > 0)
@@ -117,8 +121,12 @@ namespace Battleships.Inputs
 					string colorText = text[(colorStart + 1)..colorEnd];
 					//Zda se v tento moment ma barva ukoncit
 					bool endColor = colorText.StartsWith('/');
+					if (endColor) colorText = colorText[1..];
+					//Zda se jedna o pozadi
+					bool isBackground = colorText.StartsWith("Background");
+					if (isBackground) colorText = colorText["Background".Length..];
 					//Pokus o rozlusteni barvy
-					bool isColor = Enum.TryParse(endColor ? colorText[1..] : colorText, out ConsoleColor newColor);
+					bool isColor = Enum.TryParse(colorText, out ConsoleColor newColor);
 					//Pokud barva existuje, tak zmenit
 					if (isColor)
 					{
@@ -127,22 +135,45 @@ namespace Battleships.Inputs
 						//Pristi vypis probehne az od konce definice
 						text = text[(colorEnd + 1)..];
 
-						//Pokud je konec barvy, pak nastavime barvu zpet na original pred aktualni barvou
-						if (endColor)
+						if (isBackground)
 						{
-							//Kontrola existence barvy (zaroven index nemuze byt 0 protoze prvni barva je vzdy uplne puvodni barva pred vypisem)
-							if (colorHistory.LastIndexOf(newColor) < 1) continue;
-							//Odebrani barvy z historie
-							colorHistory = colorHistory.GetRange(0, colorHistory.LastIndexOf(newColor));
-							//Nastaveni barvy na posledni barvu pred aktualni barvou
-							Console.ForegroundColor = colorHistory.Last();
+							//Pokud je konec barvy, pak nastavime barvu zpet na original pred aktualni barvou
+							if (endColor)
+							{
+								//Kontrola existence barvy (zaroven index nemuze byt 0 protoze prvni barva je vzdy uplne puvodni barva pred vypisem)
+								if (backgroundColorHistory.LastIndexOf(newColor) < 1) continue;
+								//Odebrani barvy z historie
+								backgroundColorHistory = backgroundColorHistory.GetRange(0, backgroundColorHistory.LastIndexOf(newColor));
+								//Nastaveni barvy na posledni barvu pred aktualni barvou
+								Console.BackgroundColor = backgroundColorHistory.Last();
+							}
+							else
+							{
+								//Zmena barvy na pzoadovanou barvu
+								Console.BackgroundColor = newColor;
+								//Pridani barvy do historie
+								backgroundColorHistory.Add(newColor);
+							}
 						}
 						else
 						{
-							//Zmena barvy na pzoadovanou barvu
-							Console.ForegroundColor = newColor;
-							//Pridani barvy do historie
-							colorHistory.Add(newColor);
+							//Pokud je konec barvy, pak nastavime barvu zpet na original pred aktualni barvou
+							if (endColor)
+							{
+								//Kontrola existence barvy (zaroven index nemuze byt 0 protoze prvni barva je vzdy uplne puvodni barva pred vypisem)
+								if (foregroundColorHistory.LastIndexOf(newColor) < 1) continue;
+								//Odebrani barvy z historie
+								foregroundColorHistory = foregroundColorHistory.GetRange(0, foregroundColorHistory.LastIndexOf(newColor));
+								//Nastaveni barvy na posledni barvu pred aktualni barvou
+								Console.ForegroundColor = foregroundColorHistory.Last();
+							}
+							else
+							{
+								//Zmena barvy na pzoadovanou barvu
+								Console.ForegroundColor = newColor;
+								//Pridani barvy do historie
+								foregroundColorHistory.Add(newColor);
+							}
 						}
 						continue;
 					}
@@ -156,10 +187,11 @@ namespace Battleships.Inputs
 			}
 			Console.CursorVisible = visible;
 			//Navraceni barvy na original
-			Console.ForegroundColor = originalColor;
+			Console.ForegroundColor = originalForegroundColor;
+			Console.BackgroundColor = originalBackgroundColor;
 		}
 		//Vypise text a zalomi radek
-		public static void WriteLine(string text, ConsoleColor? color = null) => Write(text + "\n", color);
+		public static void WriteLine(string text, ConsoleColor? foregroundColor = null, ConsoleColor? backgroundColor = null) => Write(text + "\n", foregroundColor, backgroundColor);
 		//Vypise text a zbyvajici misto, ktere zbyva k danemu kurzoru, vyplni mezerami
 		private static void WriteUntilCursor(string text, (int Left, int Top) upToCursor)
 		{
@@ -419,11 +451,11 @@ namespace Battleships.Inputs
 			return result.Trim();
 		}
 		//Precte dalsi charakter
-		public static ConsoleKeyInfo ReadKey(bool showCursor = true)
+		public static ConsoleKeyInfo ReadKey(bool showCursor = true, bool display = true)
 		{
 			bool original = Console.CursorVisible;
 			Console.CursorVisible = showCursor;
-			ConsoleKeyInfo result = Console.ReadKey();
+			ConsoleKeyInfo result = Console.ReadKey(!display);
 			Console.CursorVisible = original;
 			return result;
 		}
@@ -439,7 +471,7 @@ namespace Battleships.Inputs
 			do
 			{
 				//Precteni znaku
-				result = ControlManager.KeyToControlInGroup(ReadKey(false).Key, group);
+				result = ControlManager.KeyToControlInGroup(ReadKey(false, false).Key, group);
 				attempts++;
 			}
 			while (result == Control.Unknown && (maximumAttempts <= 0 || attempts < maximumAttempts));

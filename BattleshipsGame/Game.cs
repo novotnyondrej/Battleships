@@ -117,10 +117,9 @@ namespace Battleships.BattleshipsGame
 			//Vytvoreni bitevnich poli
 			Battlefield challengerBattlefield = new(battlefieldSize, null, battleshipSet);
 			Battlefield opponentBattlefield = new(battlefieldSize, null, battleshipSet);
-
 			//Umisteni vsech lodi do bitevnich poli
-			if (!challenger.PlaceAllBattleships(challengerBattlefield)) return null;
-			if (!opponent.PlaceAllBattleships(opponentBattlefield)) return null;
+			//if (!challenger.PlaceAllBattleships(challengerBattlefield)) return default;
+			//if (!opponent.PlaceAllBattleships(opponentBattlefield)) return default;
 
 			//Vytvoreni hracich desek
 			Board challengerBoard = new(challenger, challengerBattlefield);
@@ -128,6 +127,8 @@ namespace Battleships.BattleshipsGame
 
 			//Vytvoreni samotne hry
 			Game game = new(challengerBoard, opponentBoard);
+			//Pridani hry do globalniho seznamu
+			GlobalVariables.AddGame(game);
 			return game;
 		}
 		//Pokracuje ve hre

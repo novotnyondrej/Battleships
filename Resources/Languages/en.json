@@ -42,6 +42,7 @@
 	"NoSpacesAllowed": "Must not contain spaces",
 	"EnterBattlefieldSize": "Enter battlefield size",
 	"SelectBattleshipSet": "Select battleship set",
+	"PlaceBattleship": "Place a battleship",
 
 	"TextTooShort": "Must be at least {0} characters long",
 	"TextTooLong": "Must not be longer than {0} characters",

@@ -31,5 +31,9 @@ namespace Battleships.Global
 		{
 			_Players.Add(player);
 		}
+		public static void AddGame(Game game)
+		{
+			_Games.Add(game);
+		}
 	}
 }

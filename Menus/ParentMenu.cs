@@ -35,14 +35,8 @@ namespace Battleships.Menus
 		public void Show()
 		{
 			//Nacteni moznosti jako texty
-			List<(string option, bool available, TranslationKey reasonTranslationKey)> options = Options.Select(
-				(option) =>
-				{
-					//Ziskani dostupnosti
-					(bool available, TranslationKey reasonTranslationKey) = option.Availability();
-					//Vraceni informaci o moznosti
-					return (option.Name, available, reasonTranslationKey);
-				}
+			List<(string option, Func<(bool available, TranslationKey reasonTranslationKey)> availability)> options = Options.Select(
+				(option) => (option.Name, option.AvailabilityFunction ?? (() => (true, TranslationKey.Unknown)))
 			).ToList();
 			//Pocet vsech moznosti
 			int realOptionsCount = options.Count;
@@ -52,8 +46,7 @@ namespace Battleships.Menus
 					HasParent
 						? String.Format(ContentManager.GetTranslation(TranslationKey.Back), Parent.Name)
 						: ContentManager.GetTranslation(TranslationKey.Exit),
-					true,
-					TranslationKey.Unknown
+					() => (true, TranslationKey.Unknown)
 				)
 			);
 			//Index vybrane moznosti
@@ -62,7 +55,17 @@ namespace Battleships.Menus
 			do
 			{
 				//Ziskani volby
-				index = Input.SelectionInput(NameTranslationKey ?? TranslationKey.Unknown, options, index);
+				index = Input.SelectionInput(
+					NameTranslationKey ?? TranslationKey.Unknown,
+					options.Select(
+						(optionInfo) =>
+						{
+							(bool available, TranslationKey reasonTranslationKey) = optionInfo.availability.Invoke();
+							return (optionInfo.option, available, reasonTranslationKey);
+						}
+					),
+					index
+				);
 				if (index >= 0 && index < realOptionsCount)
 				{
 					//Zobrazeni potomka

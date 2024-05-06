@@ -23,7 +23,10 @@ namespace Battleships.Inputs.Controls
 			{ Control.TextInputUp, new List<ConsoleKey>() { ConsoleKey.UpArrow} },
 			{ Control.TextInputRight, new List<ConsoleKey>() { ConsoleKey.RightArrow} },
 			{ Control.TextInputDown, new List<ConsoleKey>() { ConsoleKey.DownArrow} },
-			{ Control.TextInputLeft, new List<ConsoleKey>() { ConsoleKey.LeftArrow} }
+			{ Control.TextInputLeft, new List<ConsoleKey>() { ConsoleKey.LeftArrow} },
+
+			{ Control.RotateRight, new List<ConsoleKey>() { ConsoleKey.R, ConsoleKey.E, ConsoleKey.O, ConsoleKey.NumPad9 } },
+			{ Control.RotateLeft, new List<ConsoleKey>() { ConsoleKey.Q, ConsoleKey.U, ConsoleKey.NumPad7 } }
 		};
 		public static Dictionary<Control, IEnumerable<ConsoleKey>> ControlTranslationMap => DefaultControlTranslationMap;
 
@@ -31,7 +34,9 @@ namespace Battleships.Inputs.Controls
 		{
 			{ ControlGroup.TextInput, new List<Control>() { Control.Back, Control.Delete, Control.Confirm, Control.TextInputCancel, Control.TextInputUp, Control.TextInputRight, Control.TextInputDown, Control.TextInputLeft } },
 			{ ControlGroup.SelectionInput, new List<Control>() { Control.Cancel, Control.Confirm, Control.Up, Control.Down } },
-			{ ControlGroup.PaginableSelectionInput, new List<Control>() { Control.Cancel, Control.Confirm, Control.Up, Control.Right, Control.Down, Control.Left } }
+			{ ControlGroup.PaginableSelectionInput, new List<Control>() { Control.Cancel, Control.Confirm, Control.Up, Control.Right, Control.Down, Control.Left } },
+			{ ControlGroup.CoordinateSelection, new List<Control>() { Control.Cancel, Control.Confirm, Control.Up, Control.Right, Control.Down, Control.Left } },
+			{ ControlGroup.ShipPlacement, new List<Control>() { Control.Cancel, Control.Confirm, Control.Up, Control.Right, Control.Down, Control.Left, Control.RotateRight, Control.RotateLeft } }
 		};
 		public static Dictionary<ControlGroup, IEnumerable<Control>> ControlGroups => _ControlGroups;
 

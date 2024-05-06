@@ -28,11 +28,28 @@ namespace Battleships.BattleshipsGame.Battlefields
 			}
 		}
 		//Zda je bitevni pole plne nastaveno
-		public bool Ready { get => !(NextMissingBattleship is null); }
+		public bool Ready { get => NextMissingBattleship is null; }
 
 		public Battlefield(byte width, byte? height = null, IReadOnlyDictionary<BattleshipSize, byte> battleshipSet = null) : base(width, height, battleshipSet)
 		{
 			_BattleshipsList = new();
+		}
+		//Zda lod muze byt na danou souradnici polozena
+		public bool CanPlaceBattleship(Coordinate coordinate, BattleshipSize size, BattleshipOrientation orientation)
+		{
+			//Ziskani vsech souradnic, na kterych by se budouci lod nachazela
+			IEnumerable<Coordinate> futureTotalPosition = Battleship.GetTotalPosition(this, coordinate, size, orientation);
+			//Nejprve je treba overit, ze lod nepresahuje hranici mapy
+			if (futureTotalPosition.Count() < (byte)size) return false;
+			//Kontrola dostupnosti jednotlivych poli
+			bool occupied = _BattleshipsList.Any(
+				ship => ship.TotalPosition.Any(
+					occupiedPosition => futureTotalPosition.Any(
+						futurePosition => occupiedPosition == futurePosition || occupiedPosition.IsNeighborOf(futurePosition)
+					)
+				)
+			);
+			return !occupied;
 		}
 		//Pokus o umisteni lode na souradnici
 		//Pri uspesnem umisteni bude vytvorena nova lod a bude pridana do seznamu lodi
@@ -45,20 +62,7 @@ namespace Battleships.BattleshipsGame.Battlefields
 
 			BattleshipSize size = (BattleshipSize)nullableSize;
 
-			//Ziskani vsech souradnic, na kterych by se budouci lod nachazela
-			IEnumerable<Coordinate> futureTotalPosition = Battleship.GetTotalPosition(this, coordinate, size, orientation);
-			//Nejprve je treba overit, ze lod nepresahuje hranici mapy
-			if (futureTotalPosition.Count() < (byte)size) return false;
-
-			//Kontrola dostupnosti jednotlivych poli
-			bool occupied = _BattleshipsList.Any(
-				ship => ship.TotalPosition.Any(
-					occupiedPosition => futureTotalPosition.Any(
-						futurePosition => occupiedPosition == futurePosition || occupiedPosition.IsNeighborOf(futurePosition)
-					)
-				)
-			);
-			if (occupied) return false;
+			if (!CanPlaceBattleship(coordinate, size, orientation)) return false;
 
 			//Lod lze umistit do bitevniho pole
 			_BattleshipsList.Add(new(this, coordinate, size, orientation));
@@ -113,6 +117,18 @@ namespace Battleships.BattleshipsGame.Battlefields
 				}
 			}
 			return true;
+		}
+		//Ziska znak pro dane pole
+		public override string GetColorAtCoordinate(Coordinate coordinate)
+		{
+			//Ziskani barvy od pole, ktere nevidi nase lode
+			string color = base.GetColorAtCoordinate(coordinate);
+			//Pokud barva neni nastavena, zkontrolujeme, jestli nepatri jedne z nasich lodi
+			if (color.Length <= 0)
+			{
+				if (_BattleshipsList.Any((battleship) => battleship.TotalPosition.Contains(coordinate))) color = "BackgroundGray";
+			}
+			return color;
 		}
 	}
 }

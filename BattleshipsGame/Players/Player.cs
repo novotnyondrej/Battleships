@@ -7,6 +7,7 @@ using Battleships.BattleshipsGame.Battlefields;
 using Battleships.BattleshipsGame.Battleships;
 using Battleships.Global;
 using Battleships.Inputs;
+using Battleships.Inputs.Controls;
 using Battleships.Content;
 
 namespace Battleships.BattleshipsGame.Players
@@ -80,14 +81,23 @@ namespace Battleships.BattleshipsGame.Players
 			if (setIndex < 0) return default;
 			return sets.ElementAtOrDefault(setIndex);
 		}
-		//Ziska souradnici, na kterou chce hrac umistit lod
+		//Prinuti uzivatele polozit lod
 		public bool PlaceBattleship(Battlefield battlefield)
 		{
-			return false;
+			//Ziskani pozice dalsi lode
+			(Coordinate coordinate, BattleshipOrientation orientation) = Input.PlaceBattleship(battlefield, battlefield.NextMissingBattleship ?? BattleshipSize.Battleship);
+			//Polozeni lode
+			if (coordinate != default) battlefield.PlaceNextBattleship(coordinate, orientation);
+			return coordinate != default;
 		}
+		//Prinuti uzivatele polozit vsechny lode do bitevniho pole
 		public bool PlaceAllBattleships(Battlefield battlefield)
 		{
-			return false;
+			while (!battlefield.Ready)
+			{
+				if (!PlaceBattleship(battlefield)) return false;
+			}
+			return true;
 		}
 		//Ziska souradnici, na kterou chce hrac zautocit
 		public Coordinate Attack(EnemyBattlefield enemyBattlefield, Battlefield ownerBattlefield)
