@@ -11,6 +11,9 @@ namespace Battleships.BattleshipsGame.Players
 	//Rozhrani pro hrace
 	interface IPlayer
 	{
+		//Jmeno hrace
+		public string Name { get; }
+
 		//Ziska velikost bitevniho pole
 		public byte? GetBattlefieldSize(byte minimumSize = 6, byte maximumSize = 16);
 		//Dava hracovi moznost vybrat sadu lodi

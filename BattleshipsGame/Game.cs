@@ -118,8 +118,8 @@ namespace Battleships.BattleshipsGame
 			Battlefield challengerBattlefield = new(battlefieldSize, null, battleshipSet);
 			Battlefield opponentBattlefield = new(battlefieldSize, null, battleshipSet);
 			//Umisteni vsech lodi do bitevnich poli
-			//if (!challenger.PlaceAllBattleships(challengerBattlefield)) return default;
-			//if (!opponent.PlaceAllBattleships(opponentBattlefield)) return default;
+			if (!challenger.PlaceAllBattleships(challengerBattlefield)) return default;
+			if (!opponent.PlaceAllBattleships(opponentBattlefield)) return default;
 
 			//Vytvoreni hracich desek
 			Board challengerBoard = new(challenger, challengerBattlefield);
@@ -140,12 +140,22 @@ namespace Battleships.BattleshipsGame
 			//Ziskani utocnika
 			Board currentBoard = (ChallengerOnMove ? ChallengerBoard : OpponentBoard);
 			Board nextBoard = (ChallengerOnMove ? OpponentBoard : ChallengerBoard);
+			//Hrac je na rade
+			Console.Clear();
+			InputManager.WriteLine(String.Format(ContentManager.GetTranslation(TranslationKey.StartAttack), currentBoard.Owner.Name));
+			//Potvrzeni
+			InputManager.WriteLine(ContentManager.GetTranslation(TranslationKey.AnyKeyToContinue));
+			InputManager.ReadKey(true, false);
+			Console.Clear();
+			currentBoard.PrintBattlefields();
+
 			//Pocet pokusu
 			byte attemptsCount = 0;
 			bool success = false;
+			AttackResult attackResult = default;
 			//Uzivatel ma 3 pokusy na uspesny utok, pokud bude z nejakeho duvodu zamitnut 3x za sebou, tah se posune na protihrace
 			//Pri spravnem kodu nikdy nebude treba vice jak 1 pokus
-			while (!success && attemptsCount < 3)
+			do
 			{
 				//Ziskani souradnice utoku
 				Coordinate coordinate = currentBoard.Attack();
@@ -154,13 +164,41 @@ namespace Battleships.BattleshipsGame
 
 				//Udeleni grantu k utoku a nasledne provedeni samotneho utoku
 				AttackingAllowed = true;
-				success = nextBoard.GetAttacked(coordinate);
+				(success, attackResult) = nextBoard.GetAttacked(coordinate);
 				AttackingAllowed = false;
 				//Zapocitani pokusu
 				attemptsCount++;
 			}
+			while ((!success || (attackResult == AttackResult.Hit && !nextBoard.OwnerBattlefield.AllShipsSunken)) && attemptsCount < 3);
 			//Prohozeni roli
 			ChallengerOnMove = (!ChallengerOnMove);
+
+			//Vypsani noveho stavu
+			currentBoard.PrintBattlefields();
+			//Potvrzeni
+			InputManager.WriteLine(ContentManager.GetTranslation(TranslationKey.AnyKeyToContinue));
+			InputManager.ReadKey(true, false);
+			//Promazani konzole
+			Console.Clear();
+			if (!nextBoard.OwnerBattlefield.AllShipsSunken)
+			{
+				InputManager.WriteLine(String.Format(ContentManager.GetTranslation(TranslationKey.EndAttack), currentBoard.Owner.Name));
+				//Potvrzeni
+				InputManager.WriteLine(ContentManager.GetTranslation(TranslationKey.AnyKeyToContinue));
+				InputManager.ReadKey(true, false);
+			}
+			else
+			{
+				InputManager.WriteLine(String.Format(ContentManager.GetTranslation(TranslationKey.WinnerText), currentBoard.Owner.Name));
+				//Potvrzeni
+				InputManager.WriteLine(ContentManager.GetTranslation(TranslationKey.AnyKeyToContinue));
+				InputManager.ReadKey(true, false);
+				//Vypsani bitevnich poli
+				currentBoard.PrintBattlefields(true);
+				//Potvrzeni
+				InputManager.WriteLine(ContentManager.GetTranslation(TranslationKey.AnyKeyToContinue));
+				InputManager.ReadKey(true, false);
+			}
 			//Vraceni vysledku
 			return success;
 		}

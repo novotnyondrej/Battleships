@@ -25,8 +25,8 @@ namespace Battleships.Inputs.Controls
 			{ Control.TextInputDown, new List<ConsoleKey>() { ConsoleKey.DownArrow} },
 			{ Control.TextInputLeft, new List<ConsoleKey>() { ConsoleKey.LeftArrow} },
 
-			{ Control.RotateRight, new List<ConsoleKey>() { ConsoleKey.R, ConsoleKey.E, ConsoleKey.O, ConsoleKey.NumPad9 } },
-			{ Control.RotateLeft, new List<ConsoleKey>() { ConsoleKey.Q, ConsoleKey.U, ConsoleKey.NumPad7 } }
+			{ Control.RotateRight, new List<ConsoleKey>() { ConsoleKey.R, ConsoleKey.E, ConsoleKey.I, ConsoleKey.NumPad9 } },
+			{ Control.RotateLeft, new List<ConsoleKey>() { ConsoleKey.Q, ConsoleKey.Y, ConsoleKey.NumPad7 } }
 		};
 		public static Dictionary<Control, IEnumerable<ConsoleKey>> ControlTranslationMap => DefaultControlTranslationMap;
 

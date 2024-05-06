@@ -334,17 +334,71 @@ namespace Battleships.Inputs
 			Console.CursorVisible = visible;
 			return objects.ElementAtOrDefault(selectedObjectIndex);
 		}
-		//Vyber souradnice, podporuje i umistovani lodi
-		private static (Coordinate coordinate, BattleshipOrientation orientation) GetCoordinate(TranslationKey questionTranslationKey, Battlefield battlefield, ControlGroup controlGroup = ControlGroup.CoordinateSelection, BattleshipSize battleshipSize = BattleshipSize.Battleship)
+		//Vybere souradnici na hracim poli (pro utok)
+		public static Coordinate GetCoordinate(TranslationKey questionTranslationKey, EnemyBattlefield battlefield, bool clearConsole = true)
 		{
-			//Zda se poklada lod
-			bool placingBattleship = controlGroup == ControlGroup.ShipPlacement;
-
 			bool visible = Console.CursorVisible;
 			Console.CursorVisible = false;
-			Console.Clear();
+			if (clearConsole) Console.Clear();
 			//Vypsani textu
-			InputManager.PrintQuestion(ContentManager.GetTranslation(questionTranslationKey), false);
+			InputManager.PrintQuestion(ContentManager.GetTranslation(questionTranslationKey), false, !clearConsole);
+			(int Left, int Top) initialPosition = Console.GetCursorPosition();
+
+			//Oznaceny radek a sloupec
+			int row = (battlefield.Height / 2);
+			int column = (battlefield.Width / 2);
+			//Dokud nebylo potvrzeno, tak pokracuj
+			bool selected = false;
+			while (!selected)
+			{
+				//Ziskani souradnice
+				Coordinate coordinate = battlefield.GetCoordinate((byte)column, (byte)row);
+				//Vypsani bitevniho pole
+				InputManager.RevertCursor(initialPosition, false);
+				InputManager.Write(battlefield.ToString(coordinate));
+				//Cekani na vstup
+				Control control = InputManager.GetControlOfGroup(ControlGroup.CoordinateSelection);
+				//Reakce na vstup
+				if (control == Control.Cancel) return default;
+				else if (control == Control.Confirm)
+				{
+					//Kontrola, ze policko muze byt napadeno
+					if (!battlefield.CanBeAttacked(coordinate)) continue;
+					//Potvrzeni souradnice
+					selected = true;
+				}
+				else if (control == Control.Up)
+				{
+					//O radek vyse
+					if (row > 0) row--;
+				}
+				else if (control == Control.Right)
+				{
+					//O sloupec doprava
+					if (column < battlefield.Width - 1) column++;
+				}
+				else if (control == Control.Down)
+				{
+					//O radek nize
+					if (row < battlefield.Height - 1) row++;
+				}
+				else if (control == Control.Left)
+				{
+					//O sloupec doleva
+					if (column > 0) column--;
+				}
+			}
+			Console.CursorVisible = visible;
+			return battlefield.GetCoordinate((byte)column, (byte)row);
+		}
+		//Vybere souradnici pro polozeni lodi
+		public static (Coordinate coordinate, BattleshipOrientation orientation) PlaceBattleship(Battlefield battlefield, BattleshipSize size, bool clearConsole = true)
+		{
+			bool visible = Console.CursorVisible;
+			Console.CursorVisible = false;
+			if (clearConsole) Console.Clear();
+			//Vypsani textu
+			InputManager.PrintQuestion(ContentManager.GetTranslation(TranslationKey.PlaceBattleship), false);
 			(int Left, int Top) initialPosition = Console.GetCursorPosition();
 
 			//Ruzne smery
@@ -372,26 +426,20 @@ namespace Battleships.Inputs
 				//Ziskani souradnice
 				Coordinate coordinate = battlefield.GetCoordinate((byte)column, (byte)row);
 				//Vyznacena policka
-				IEnumerable<Coordinate> highlightedCoordinates = Enumerable.Empty<Coordinate>();
+				IEnumerable<Coordinate> highlightedCoordinates = Battleship.GetTotalPosition(battlefield, coordinate, size, directions.ElementAt(directionIndex).orientation);
 				//Barva zvyrazneni
-				ConsoleColor highlightColor = ConsoleColor.White;
-				if (placingBattleship)
-				{
-					//Ziskani vyznacenych souradnic
-					highlightedCoordinates = Battleship.GetTotalPosition(battlefield, coordinate, battleshipSize, directions.ElementAt(directionIndex).orientation);
-					highlightColor = battlefield.CanPlaceBattleship(coordinate, battleshipSize, directions.ElementAt(directionIndex).orientation) ? ConsoleColor.DarkBlue : ConsoleColor.DarkRed;
-				}
+				ConsoleColor highlightColor = battlefield.CanPlaceBattleship(coordinate, size, directions.ElementAt(directionIndex).orientation) ? ConsoleColor.DarkBlue : ConsoleColor.DarkRed;
 				//Vypsani bitevniho pole
 				InputManager.RevertCursor(initialPosition, false);
-				InputManager.Write(battlefield.ToString(coordinate, highlightedCoordinates, highlightColor));
+				InputManager.Write(battlefield.ToString(coordinate, highlightedCoordinates, highlightColor, false));
 				//Cekani na vstup
-				Control control = InputManager.GetControlOfGroup(controlGroup);
+				Control control = InputManager.GetControlOfGroup(ControlGroup.ShipPlacement);
 				//Reakce na vstup
 				if (control == Control.Cancel) return (default, default);
 				else if (control == Control.Confirm)
 				{
 					//Kontrola, ze lod muze byt polozena
-					if (placingBattleship && !battlefield.CanPlaceBattleship(coordinate, battleshipSize, directions.ElementAt(directionIndex).orientation)) continue;
+					if (!battlefield.CanPlaceBattleship(coordinate, size, directions.ElementAt(directionIndex).orientation)) continue;
 					//Potvrzeni souradnice
 					selected = true;
 				}
@@ -415,39 +463,32 @@ namespace Battleships.Inputs
 					//O sloupec doleva
 					if (column > minColumn) column--;
 				}
-				if (placingBattleship)
+				else if (control == Control.RotateRight)
 				{
-					if (control == Control.RotateRight)
-					{
-						//Otocit doprava
-						directionIndex++;
-						if (directionIndex >= directions.Count) directionIndex -= directions.Count;
-					}
-					else if (control == Control.RotateLeft)
-					{
-						//Otocit doleva
-						directionIndex--;
-						if (directionIndex < 0) directionIndex += directions.Count;
-					}
-					(int x, int y) = directions.ElementAt(directionIndex).direction;
-					//Prepocet mezi
-					minRow = 0 + (y < 0 ? (int)battleshipSize - 1 : 0);
-					maxRow = battlefield.Height - 1 - (y > 0 ? (int)battleshipSize - 1 : 0);
-					minColumn = 0 + (x < 0 ? (int)battleshipSize - 1 : 0);
-					maxColumn = battlefield.Width - 1 - (x > 0 ? (int)battleshipSize - 1 : 0);
-					//Kontrola mezi
-					if (row < minRow) row = minRow;
-					else if (row > maxRow) row = maxRow;
-					if (column < minColumn) column = minColumn;
-					else if (column > maxColumn) column = maxColumn;
+					//Otocit doprava
+					directionIndex++;
+					if (directionIndex >= directions.Count) directionIndex -= directions.Count;
 				}
+				else if (control == Control.RotateLeft)
+				{
+					//Otocit doleva
+					directionIndex--;
+					if (directionIndex < 0) directionIndex += directions.Count;
+				}
+				(int x, int y) = directions.ElementAt(directionIndex).direction;
+				//Prepocet mezi
+				minRow = 0 + (y < 0 ? (int)size - 1 : 0);
+				maxRow = battlefield.Height - 1 - (y > 0 ? (int)size - 1 : 0);
+				minColumn = 0 + (x < 0 ? (int)size - 1 : 0);
+				maxColumn = battlefield.Width - 1 - (x > 0 ? (int)size - 1 : 0);
+				//Kontrola mezi
+				if (row < minRow) row = minRow;
+				else if (row > maxRow) row = maxRow;
+				if (column < minColumn) column = minColumn;
+				else if (column > maxColumn) column = maxColumn;
 			}
 			Console.CursorVisible = visible;
 			return (battlefield.GetCoordinate((byte)column, (byte)row), directions.ElementAt(directionIndex).orientation);
 		}
-		//Vybere souradnici na hracim poli
-		public static Coordinate GetCoordinate(TranslationKey questionTranslationKey, Battlefield battlefield) => GetCoordinate(questionTranslationKey, battlefield, ControlGroup.CoordinateSelection).coordinate;
-		//Vybere souradnici pro polozeni lodi
-		public static (Coordinate coordinate, BattleshipOrientation orientation) PlaceBattleship(Battlefield battlefield, BattleshipSize size) => GetCoordinate(TranslationKey.PlaceBattleship, battlefield, ControlGroup.ShipPlacement, size);
 	}
 }

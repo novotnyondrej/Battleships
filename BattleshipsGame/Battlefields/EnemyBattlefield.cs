@@ -29,10 +29,8 @@ namespace Battleships.BattleshipsGame.Battlefields
 		//Vsechny lode jsou potopeny, pokud se pocet potopenych lodi shoduje s poctem lodi v sade
 		public bool AllShipsSunken
 		{
-			get => SunkenBattleships.GroupBy(
-				ship => ship.Size
-			).All(
-				group => BattleshipSet[group.First().Size] <= group.Count()
+			get => BattleshipSet.All(
+				(pair) => pair.Value <= SunkenBattleships.Count((battleship) => battleship.Size == pair.Key)
 			);
 		}
 
@@ -75,8 +73,13 @@ namespace Battleships.BattleshipsGame.Battlefields
 			//Vraceni souradnice
 			return CoordinateMap.ElementAt(x).ElementAt(y);
 		}
+		//Zda muze byt souradnice napadena
+		public bool CanBeAttacked(Coordinate coordinate)
+		{
+			return !_AttackedCoordinates.ContainsKey(coordinate);
+		}
 		//Ziska znak pro dane pole
-		public virtual string GetColorAtCoordinate(Coordinate coordinate)
+		public virtual string GetColorAtCoordinate(Coordinate coordinate, bool secure = true)
 		{
 			if (_SunkenBattleships.Any((battleship) => battleship.TotalPosition.Contains(coordinate)))
 			{
@@ -91,11 +94,15 @@ namespace Battleships.BattleshipsGame.Battlefields
 			//Pokus o nalezeni pokusu o utok
 			KeyValuePair<Coordinate, AttackResult> attack = _AttackedCoordinates.FirstOrDefault((pair) => pair.Key == coordinate);
 			//Pokud utok neexistuje, pak vrati prazdne pole
-			return "";
-			if (attack.Value == AttackResult.Hit)
+			if (attack.Key == coordinate && attack.Value == AttackResult.Hit)
 			{
 				//Tato souradnice je soucasti nepotopene lodi
 				return "BackgroundRed";
+			}
+			else if (attack.Key == coordinate && attack.Value == AttackResult.Miss)
+			{
+				//Tato souradnice jiz byla ozkousena
+				return "BackgroundDarkGray";
 			}
 			return "";
 		}
@@ -107,7 +114,8 @@ namespace Battleships.BattleshipsGame.Battlefields
 		public string ToString(
 			Coordinate selectedCoordinate = null,
 			IEnumerable<Coordinate> highlightedCoordinates = null,
-			ConsoleColor highlightColor = ConsoleColor.DarkBlue
+			ConsoleColor highlightColor = ConsoleColor.DarkBlue,
+			bool secure = true
 		)
 		{
 			//Vysledek
@@ -150,11 +158,11 @@ namespace Battleships.BattleshipsGame.Battlefields
 					else
 					{
 						//Ziskani znaku
-						string color = GetColorAtCoordinate(GetCoordinate(x, y));
+						string color = GetColorAtCoordinate(GetCoordinate(x, y), secure);
 						//Pokud je radek nebo sloupec oznacen, pridame pozadi
 						if (selectedCoordinate != null && selectedCoordinate.Y == y && selectedCoordinate.X == x)
 						{
-							character = "<DarkGray>[]</DarkGray>";
+							character = "<Gray>[]</Gray>";
 						}
 						else if (selectedCoordinate != null && selectedCoordinate.X == x)
 						{
@@ -199,9 +207,9 @@ namespace Battleships.BattleshipsGame.Battlefields
 			{
 				new()
 				{
-					{ BattleshipSize.Carrier, 1 },
-					{ BattleshipSize.Battleship, 1 },
-					{ BattleshipSize.Submarine, 2 },
+					//{ BattleshipSize.Carrier, 1 },
+					//{ BattleshipSize.Battleship, 1 },
+					//{ BattleshipSize.Submarine, 2 },
 					//{ BattleshipSize.Cruiser, 1 },
 					{ BattleshipSize.PatrolBoat, 1 }
 				}

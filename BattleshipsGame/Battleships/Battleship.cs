@@ -58,10 +58,15 @@ namespace Battleships.BattleshipsGame.Battleships
 			}
 			return totalPosition;
 		}
+		//Staticky prevod na string
+		public static string ToString(BattleshipSize size)
+		{
+			return "<BackgroundGray><DarkGray>" + String.Join("", Enumerable.Repeat("#", (int)size)) + "</DarkGray></BackgroundGray>";
+		}
 		//Vrati textovou reprezentaci bitevni lode
 		public override string ToString()
 		{
-			return String.Join("", Enumerable.Repeat("X", (int)Size));
+			return ToString(Size);
 		}
 	}
 }

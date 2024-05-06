@@ -35,7 +35,12 @@ namespace Battleships
 				{
 					new ActionMenu(TranslationKey.NewGame, () =>
 					{
+						//Zalozeni hry
 						Game game = Game.Create();
+						//Kontrola upesnosti
+						if (game == default) return;
+						//Spusteni hry
+						while (game.Progress() == true) { };
 					}),
 					new ParentMenu(TranslationKey.LoadGame, Enumerable.Empty<IMenu>(), () => (GlobalVariables.Games.Any(), TranslationKey.NoGames)),
 					new ParentMenu(TranslationKey.View, new List<IMenu>()

@@ -62,14 +62,8 @@ namespace Battleships.BattleshipsGame.Players
 		{
 			//Prevod vsech setu na string
 			IEnumerable<string> options = sets.Select(
-				(set) => String.Join(" ", set.Select(
-					(pair) => String.Join(
-						" ",
-						Enumerable.Repeat(
-							String.Join("", Enumerable.Repeat("X", (int)pair.Key)),
-							pair.Value
-						)
-					)
+				(set) => String.Join("\n", set.Select(
+					(pair) => pair.Value + "x " + ContentManager.GetTranslation((TranslationKey)Enum.Parse(typeof(TranslationKey), pair.Key.ToString())) +  "(" + Battleship.ToString(pair.Key) + ")"
 				))
 			);
 			//Vstup pro vybrani flotily
@@ -93,16 +87,33 @@ namespace Battleships.BattleshipsGame.Players
 		//Prinuti uzivatele polozit vsechny lode do bitevniho pole
 		public bool PlaceAllBattleships(Battlefield battlefield)
 		{
+			if (battlefield.Ready) return true;
+			//Informujici zprava, ze hrac poklada lode
+			Console.Clear();
+			InputManager.WriteLine(String.Format(ContentManager.GetTranslation(TranslationKey.StartPlacingBattleships), Name));
+			//Potvrzeni
+			InputManager.WriteLine(ContentManager.GetTranslation(TranslationKey.AnyKeyToContinue));
+			InputManager.ReadKey(true, false);
+
 			while (!battlefield.Ready)
 			{
 				if (!PlaceBattleship(battlefield)) return false;
 			}
+			//Zprava informujici o konci procesu
+			Console.Clear();
+			InputManager.WriteLine(String.Format(ContentManager.GetTranslation(TranslationKey.EndPlacingBattleships), Name));
+			//Potvrzeni
+			InputManager.WriteLine(ContentManager.GetTranslation(TranslationKey.AnyKeyToContinue));
+			InputManager.ReadKey(true, false);
+
 			return true;
 		}
 		//Ziska souradnici, na kterou chce hrac zautocit
 		public Coordinate Attack(EnemyBattlefield enemyBattlefield, Battlefield ownerBattlefield)
 		{
-			return null;
+			Console.SetCursorPosition(0, 0);
+			Coordinate coordinate = Input.GetCoordinate(TranslationKey.EnemyBattlefield, enemyBattlefield, false);
+			return coordinate;
 		}
 		public override string ToString()
 		{

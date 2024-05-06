@@ -75,10 +75,10 @@ namespace Battleships.BattleshipsGame.Battlefields
 			return true;
 		}
 		//Prijme utok od oponenta
-		public bool GetAttacked(Coordinate coordinate)
+		public (bool, AttackResult) GetAttacked(Coordinate coordinate)
 		{
 			//Kontrola, ze souradnice jiz nebyla uhodnuta
-			if (_AttackedCoordinates.ContainsKey(coordinate)) return false;
+			if (!CanBeAttacked(coordinate)) return (false, default);
 			//Ziskani lode, ktera se na teto souradnici nachazi
 			Battleship battleship = _BattleshipsList.FirstOrDefault(
 				battleship => battleship.TotalPosition.Contains(coordinate)
@@ -116,15 +116,15 @@ namespace Battleships.BattleshipsGame.Battlefields
 					}
 				}
 			}
-			return true;
+			return (true, result);
 		}
 		//Ziska znak pro dane pole
-		public override string GetColorAtCoordinate(Coordinate coordinate)
+		public override string GetColorAtCoordinate(Coordinate coordinate, bool secure = true)
 		{
 			//Ziskani barvy od pole, ktere nevidi nase lode
 			string color = base.GetColorAtCoordinate(coordinate);
 			//Pokud barva neni nastavena, zkontrolujeme, jestli nepatri jedne z nasich lodi
-			if (color.Length <= 0)
+			if (color.Length <= 0 && !secure)
 			{
 				if (_BattleshipsList.Any((battleship) => battleship.TotalPosition.Contains(coordinate))) color = "BackgroundGray";
 			}

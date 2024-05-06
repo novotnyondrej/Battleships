@@ -11,6 +11,9 @@ namespace Battleships.BattleshipsGame.Players
 	//Umela inteligence
 	class AI : IPlayer
 	{
+		//Jmeno hrace
+		public string Name { get; }
+
 		//Ziska velikost bitevniho pole
 		public byte? GetBattlefieldSize(byte minimumSize = 6, byte maximumSize = 16)
 		{

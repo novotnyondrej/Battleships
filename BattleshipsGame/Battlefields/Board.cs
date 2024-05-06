@@ -4,6 +4,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using Battleships.BattleshipsGame.Players;
+using Battleships.Inputs;
+using Battleships.Content;
 
 namespace Battleships.BattleshipsGame.Battlefields
 {
@@ -60,12 +62,23 @@ namespace Battleships.BattleshipsGame.Battlefields
 			return Owner.Attack(OpponentBattlefield, _OwnerBattlefield);
 		}
 		//Prijme utok od oponenta
-		public bool GetAttacked(Coordinate coordinate)
+		public (bool, AttackResult) GetAttacked(Coordinate coordinate)
 		{
 			//Kontrola, ze na desku doopravdy jde zautocit
-			if (!IsVulnerable) return false;
+			if (!IsVulnerable) return (false, default);
 			//Preneseni zpravy k bitevnimu poli
 			return _OwnerBattlefield.GetAttacked(coordinate);
+		}
+		//Vypise bitevni pole obou hracu
+		public void PrintBattlefields(bool allInsecure = false)
+		{
+			//Vypsani bitevnich poli
+			Console.Clear();
+			InputManager.WriteLine(ContentManager.GetTranslation(TranslationKey.EnemyBattlefield));
+			InputManager.WriteLine(OpponentBattlefield.ToString(secure: !allInsecure));
+			InputManager.WriteLine("");
+			InputManager.WriteLine(ContentManager.GetTranslation(TranslationKey.PlayerBattlefield));
+			InputManager.WriteLine(_OwnerBattlefield.ToString(secure: false));
 		}
 	}
 }
