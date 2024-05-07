@@ -15,9 +15,9 @@ namespace Battleships.BattleshipsGame.Battlefields
 		public byte Y { get; }
 		//Textove souradnice
 		[JsonIgnore]
-		public string Row { get => Coordinate.RowToString(Y); }
+		public string Row { get => RowToString(Y); }
 		[JsonIgnore]
-		public string Column { get => Coordinate.ColumnToString(X); }
+		public string Column { get => ColumnToString(X); }
 
 		//https://www.daniweb.com/programming/software-development/threads/368070/array-of-letters-of-the-alphabet-in-c
 		private static IEnumerable<char> ColumnChars = Enumerable.Range('A', 'Z' - 'A' + 1).Select(number => (char)number);

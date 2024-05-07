@@ -122,8 +122,27 @@ namespace Battleships.BattleshipsGame
 				}
 				else
 				{
+					//Zjisteni obtiznosti pocitace
+					int difficulty = Input.SelectionInput(
+						TranslationKey.ChooseDifficulty,
+						new List<string>()
+						{
+							ContentManager.GetTranslation(TranslationKey.Easy),
+							ContentManager.GetTranslation(TranslationKey.Normal),
+							ContentManager.GetTranslation(TranslationKey.Hard)
+						}
+					);
+					//Kontrola rozhodnuti
+					if (difficulty == -1)
+					{
+						Console.Clear();
+						InputManager.WriteLine(ContentManager.GetTranslation(TranslationKey.GameCreationCancelled));
+						InputManager.WriteLine(ContentManager.GetTranslation(TranslationKey.AnyKeyToContinue));
+						InputManager.ReadKey(true, false);
+						return default;
+					}
 					//Chce hrat proti pocitaci
-					opponent = new AI();
+					opponent = new AI((AIDificulty)difficulty);
 				}
 			}
 
@@ -193,7 +212,11 @@ namespace Battleships.BattleshipsGame
 			InputManager.WriteLine(ContentManager.GetTranslation(TranslationKey.AnyKeyToContinue));
 			InputManager.ReadKey(true, false);
 			Console.Clear();
-			currentBoard.PrintBattlefields();
+			if (currentBoard.Owner is not AI)
+			{
+				//Vypsani noveho stavu
+				currentBoard.PrintBattlefields();
+			}
 
 			//Pocet pokusu
 			byte attemptsCount = 0;
@@ -221,7 +244,8 @@ namespace Battleships.BattleshipsGame
 				(success, attackResult, sunken) = nextBoard.GetAttacked(coordinate);
 				AttackingAllowed = false;
 				//Zapocitani pokusu
-				attemptsCount++;
+				if (!success) attemptsCount++;
+				else attemptsCount = 0;
 				//Pridani do statistik
 				if (attackResult == AttackResult.Hit) currentBoard.Owner.Statistics.TotalHits++;
 				else if (attackResult == AttackResult.Miss) currentBoard.Owner.Statistics.TotalMisses++;
@@ -233,11 +257,14 @@ namespace Battleships.BattleshipsGame
 			//Prohozeni roli
 			ChallengerOnMove = (!ChallengerOnMove);
 
-			//Vypsani noveho stavu
-			currentBoard.PrintBattlefields();
-			//Potvrzeni
-			InputManager.WriteLine(ContentManager.GetTranslation(TranslationKey.AnyKeyToContinue));
-			InputManager.ReadKey(true, false);
+			if (currentBoard.Owner is not AI)
+			{
+				//Vypsani noveho stavu
+				currentBoard.PrintBattlefields();
+				//Potvrzeni
+				InputManager.WriteLine(ContentManager.GetTranslation(TranslationKey.AnyKeyToContinue));
+				InputManager.ReadKey(true, false);
+			}
 			//Promazani konzole
 			Console.Clear();
 			if (!nextBoard.OwnerBattlefield.AllShipsSunken)
@@ -245,10 +272,10 @@ namespace Battleships.BattleshipsGame
 				//Ulozeni statistik
 				GlobalVariables.SavePlayers();
 
-				InputManager.WriteLine(String.Format(ContentManager.GetTranslation(TranslationKey.EndAttack), currentBoard.Owner.Name));
+				//InputManager.WriteLine(String.Format(ContentManager.GetTranslation(TranslationKey.EndAttack), currentBoard.Owner.Name));
 				//Potvrzeni
-				InputManager.WriteLine(ContentManager.GetTranslation(TranslationKey.AnyKeyToContinue));
-				InputManager.ReadKey(true, false);
+				//InputManager.WriteLine(ContentManager.GetTranslation(TranslationKey.AnyKeyToContinue));
+				//InputManager.ReadKey(true, false);
 			}
 			else
 			{

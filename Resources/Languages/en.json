@@ -64,6 +64,10 @@
 	"NoPlayers": "No players",
 	"Language": "Language",
 	"SelectLanguage": "Select new language",
+	"ChooseDifficulty": "Choose computer difficulty",
+	"Easy": "Easy",
+	"Normal": "Normal",
+	"Hard": "Hard",
 
 	"TextTooShort": "Must be at least {0} characters long",
 	"TextTooLong": "Must not be longer than {0} characters",

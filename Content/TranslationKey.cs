@@ -75,6 +75,10 @@ namespace Battleships.Content
 		Language = 514,
 		self = 515,
 		SelectLanguage = 516,
+		ChooseDifficulty = 517,
+		Easy = 518,
+		Normal = 519,
+		Hard = 520,
 
 		TextTooShort = 50,
 		TextTooLong = 51,
