@@ -34,8 +34,6 @@ namespace Battleships.Data
 			}
 			catch (Exception e)
 			{
-				Console.WriteLine(e);
-				Console.Read();
 				//Neuspech
 				return default;
 			}
