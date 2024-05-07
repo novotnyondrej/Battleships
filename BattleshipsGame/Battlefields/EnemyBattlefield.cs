@@ -45,7 +45,7 @@ namespace Battleships.BattleshipsGame.Battlefields
 			//Nacteni atributu
 			Width = width;
 			Height = trueHeight;
-			BattleshipSet = battleshipSet ?? EnemyBattlefield.GetAllBattleshipSets(width, trueHeight, true).First();
+			BattleshipSet = battleshipSet ?? GetAllBattleshipSets(width, trueHeight).First();
 
 			//Vytvoreni mapy souradnic
 			List<List<Coordinate>> coordinateMap = new();
@@ -206,19 +206,57 @@ namespace Battleships.BattleshipsGame.Battlefields
 
 		//Na zaklade velikosti mapy vygeneruje ruzne sady lodi
 		//Sada je serazena od nejvetsi lodi po tu nejmensi
-		public static IEnumerable<IReadOnlyDictionary<BattleshipSize, byte>> GetAllBattleshipSets(byte width, byte? height = null, bool generateFirstOnly = false)
+		public static IEnumerable<IReadOnlyDictionary<BattleshipSize, byte>> GetAllBattleshipSets(byte width, byte? height = null, int percentageCovered = 15, int maximumOfEach = 5)
 		{
-			return new List<Dictionary<BattleshipSize, byte>>()
+			if (percentageCovered > 100) percentageCovered = 100;
+			else if (percentageCovered < 0) percentageCovered = 0;
+
+			byte trueHeight = height ?? width;
+			//Vypocet celkoveho poctu policek
+			int fieldsCount = width * trueHeight;
+			//Vypocet policek s lodema
+			int shipFieldsCount = (int)(fieldsCount * (percentageCovered / (float)100));
+
+			//Ruzne variace sestav
+			List<Dictionary<BattleshipSize, byte>> sets = new();
+			//Co jeste zbyva k vypocteni
+			List<(BattleshipSize level, Dictionary<BattleshipSize, byte> set, int remaining)> toCheck = new()
 			{
-				new()
-				{
-					//{ BattleshipSize.Carrier, 1 },
-					//{ BattleshipSize.Battleship, 1 },
-					//{ BattleshipSize.Submarine, 2 },
-					//{ BattleshipSize.Cruiser, 1 },
-					{ BattleshipSize.PatrolBoat, 1 }
-				}
+				(
+					BattleshipSize.Carrier,
+					new() { },
+					shipFieldsCount
+				)
 			};
+			//Nacitani ruznych variaci
+			while (toCheck.Count > 0 && sets.Count < 7)
+			{
+				//Ziskani dalsiho navrhu
+				(BattleshipSize level, Dictionary<BattleshipSize, byte> set, int remaining) = toCheck[0];
+				toCheck.RemoveAt(0);
+				//Pro kazdou lod co je mensi nebo stejne velka se nactou moznosti
+				for (int size = (int)level; size >= 2; size--)
+				{
+					//Ziskani velikosti
+					BattleshipSize currentLevel = (BattleshipSize)size;
+					//Ziskani aktualniho poctu
+					set.TryGetValue(currentLevel, out byte count);
+					//Kontrola poctu
+					if (count >= maximumOfEach) continue;
+					//Kontrola poctu dostupnych policek
+					if (remaining - size < 0) continue;
+					
+					Dictionary<BattleshipSize, byte> currentSet = set.ToDictionary((pair) => pair.Key, (pair) => pair.Value);
+					int currentRemaining = remaining - size;
+					//Pridani lode
+					if (!currentSet.ContainsKey(currentLevel)) currentSet[currentLevel] = 0;
+					currentSet[currentLevel]++;
+					//Pridani do kontroly
+					if (currentRemaining == 0) sets.Add(currentSet);
+					else toCheck.Add((currentLevel, currentSet, currentRemaining));
+				}
+			}
+			return sets;
 		}
 	}
 }

@@ -11,7 +11,7 @@ using Battleships.Menus.ObjectMenus;
 using System.Linq;
 using Battleships.Global;
 
-//Straveny cas: 27h
+//Straveny cas: 32sh
 //https://github.com/novotnyondrej/Battleships
 namespace Battleships
 {

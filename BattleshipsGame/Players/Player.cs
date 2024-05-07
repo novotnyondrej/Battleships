@@ -70,7 +70,7 @@ namespace Battleships.BattleshipsGame.Players
 			IEnumerable<string> options = sets.Select(
 				(set) => String.Join("\n", set.Select(
 					(pair) => pair.Value + "x " + ContentManager.GetTranslation((TranslationKey)Enum.Parse(typeof(TranslationKey), pair.Key.ToString())) +  "(" + Battleship.ToString(pair.Key) + ")"
-				))
+				)) + "\n"
 			);
 			//Vstup pro vybrani flotily
 			int setIndex = Input.SelectionInput(
