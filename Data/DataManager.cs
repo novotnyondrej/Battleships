@@ -20,10 +20,25 @@ namespace Battleships.Data
 			}
 			catch (Exception e)
 			{
-
+				//Neuspech
+				return default;
 			}
-			//Neuspech
-			return default;
+		}
+		//Serializuje json
+		public static string SerializeJon<OfType>(OfType obj)
+		{
+			//Pokus o prevod
+			try
+			{
+				return JsonSerializer.Serialize(obj);
+			}
+			catch (Exception e)
+			{
+				Console.WriteLine(e);
+				Console.Read();
+				//Neuspech
+				return default;
+			}
 		}
 	}
 }

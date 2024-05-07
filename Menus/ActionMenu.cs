@@ -23,10 +23,11 @@ namespace Battleships.Menus
 		public IMenu Parent { get; set; }
 		public bool HasParent { get => Parent is not null; }
 
-		public ActionMenu(TranslationKey nameTranslationKey, Action onSelect)
+		public ActionMenu(TranslationKey nameTranslationKey, Action onSelect, Func<(bool available, TranslationKey reasonTranslationKey)> availabilityFunction = null)
 		{
 			NameTranslationKey = nameTranslationKey;
 			OnSelect = onSelect;
+			AvailabilityFunction = availabilityFunction;
 		}
 
 		//Provede danou akci

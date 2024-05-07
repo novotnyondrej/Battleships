@@ -7,6 +7,7 @@ using System.Text.Json;
 using System.IO;
 using System.Reflection;
 using Battleships.Data;
+using Battleships.Global;
 
 namespace Battleships.Content
 {
@@ -41,14 +42,19 @@ namespace Battleships.Content
 			);
 		}
 		//Ziska preklady v danem jazyce
-		private static Dictionary<TranslationKey, string> GetTranslations(string language = "en")
+		private static Dictionary<TranslationKey, string> GetTranslations(string language = default)
 		{
+			//Nacteni jazyka z nastaveni pokud neni definovan
+			if (language == default) language = GlobalVariables.Settings.Language;
 			//Kontrola existence jazyka
 			if (!Translations.ContainsKey(language)) return default;
 			return Translations[language];
 		}
-		private static (bool keyExists, string translation) TryGetTranslation(TranslationKey? translationKey, string targetLanguage = "en")
+		private static (bool keyExists, string translation) TryGetTranslation(TranslationKey? translationKey, string targetLanguage = default)
 		{
+			//Nacteni jazyka z nastaveni pokud neni definovan
+			if (targetLanguage == default) targetLanguage = GlobalVariables.Settings.Language;
+
 			//Pokus o ziskani jazyka
 			Dictionary<TranslationKey, string> translations = GetTranslations(targetLanguage);
 			//Kontrola existence jazyka
@@ -65,8 +71,11 @@ namespace Battleships.Content
 			return (true, translations[(TranslationKey)translationKey]);
 		}
 		//Ziska preklad daneho klice
-		public static string GetTranslation(TranslationKey? translationKey, string targetLanguage = "en")
+		public static string GetTranslation(TranslationKey? translationKey, string targetLanguage = default)
 		{
+			//Nacteni jazyka z nastaveni pokud neni definovan
+			if (targetLanguage == default) targetLanguage = GlobalVariables.Settings.Language;
+
 			//Pokus o ziskani prekladu v cilovem jazyce
 			(bool keyExists, string translation) = TryGetTranslation(translationKey, targetLanguage);
 			//Pokud preklad existuje tak vratit

@@ -1,0 +1,27 @@
+﻿{
+	"self": "Cesky",
+
+	"Unknown": "Neznamy preklad",
+	"Undefined": "Nedefinovany preklad: \"{0}\"",
+	"AnyKeyToContinue": "<SelectionColor>> Stisknete jakoukoliv klavesu pro pokracovani <SelectionColor>",
+
+	"Back": "Zpet do {0}",
+	"Exit": "Odejit",
+	"NextPage": "Dalsi stranka",
+	"PreviousPage": "Predchozi stranka",
+
+	"MainMenu": "Hlavni menu",
+	"NewGame": "Nova hra",
+	"LoadGame": "Nacist hru",
+	"View": "Prohlednout",
+	"ViewPlayers": "Hraci",
+	"ViewGames": "Hry",
+	"Settings": "Nastaveni",
+	"Help": "Pomoc",
+	"Controls": "Ovladani",
+	"MenuNavigation": "Menu navigace",
+	"Inputs": "Uzivatelske vstupy",
+	"TextInputs": "Textove vstupy",
+	"NumberInputs": "Ciselne vstupy",
+	"SelectionInputs": "Vyberove vstupy"
+}

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using Battleships.BattleshipsGame.Battleships;
@@ -11,11 +12,13 @@ namespace Battleships.BattleshipsGame.Battlefields
 	class Battlefield : EnemyBattlefield
 	{
 		//Hraci deska, ktere toto bitevni pole patri
+		[JsonIgnore]
 		public Board Parent { get; private set; }
 		//Pozice vsech lodi
 		private List<Battleship> _BattleshipsList { get; }
 		public IEnumerable<Battleship> BattleshipsList { get => _BattleshipsList; }
 		//Vrati velikost lodi, ktera stale chybi v bitevnim poli
+		[JsonIgnore]
 		public BattleshipSize? NextMissingBattleship {
 			get
 			{
@@ -28,6 +31,7 @@ namespace Battleships.BattleshipsGame.Battlefields
 			}
 		}
 		//Zda je bitevni pole plne nastaveno
+		[JsonIgnore]
 		public bool Ready { get => NextMissingBattleship is null; }
 
 		public Battlefield(byte width, byte? height = null, IReadOnlyDictionary<BattleshipSize, byte> battleshipSet = null) : base(width, height, battleshipSet)
@@ -75,10 +79,10 @@ namespace Battleships.BattleshipsGame.Battlefields
 			return true;
 		}
 		//Prijme utok od oponenta
-		public (bool, AttackResult) GetAttacked(Coordinate coordinate)
+		public (bool success, AttackResult result, bool sunken) GetAttacked(Coordinate coordinate)
 		{
 			//Kontrola, ze souradnice jiz nebyla uhodnuta
-			if (!CanBeAttacked(coordinate)) return (false, default);
+			if (!CanBeAttacked(coordinate)) return (false, default, false);
 			//Ziskani lode, ktera se na teto souradnici nachazi
 			Battleship battleship = _BattleshipsList.FirstOrDefault(
 				battleship => battleship.TotalPosition.Contains(coordinate)
@@ -88,10 +92,11 @@ namespace Battleships.BattleshipsGame.Battlefields
 			//Pridani vysledku do seznamu
 			_AttackedCoordinates.Add(coordinate, result);
 
+			bool sunken = false;
 			//Pokud byla lod zasahnuta, je treba provest kontrolu, zda byla plne potopena
 			if (result == AttackResult.Hit)
 			{
-				bool sunken = battleship.TotalPosition.All(
+				sunken = battleship.TotalPosition.All(
 					coordinate => _AttackedCoordinates.ContainsKey(coordinate)
 				);
 				//Pokud lod byla potopena, je treba ji pridat do seznamu potopenych lodi a ziskat vsechny okolni policka a oznacit je jako trefu vedle
@@ -116,7 +121,7 @@ namespace Battleships.BattleshipsGame.Battlefields
 					}
 				}
 			}
-			return (true, result);
+			return (true, result, sunken);
 		}
 		//Ziska znak pro dane pole
 		public override string GetColorAtCoordinate(Coordinate coordinate, bool secure = true)

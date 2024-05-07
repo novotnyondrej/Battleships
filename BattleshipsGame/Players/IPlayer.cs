@@ -12,7 +12,9 @@ namespace Battleships.BattleshipsGame.Players
 	interface IPlayer
 	{
 		//Jmeno hrace
-		public string Name { get; }
+		public string Name { get; set; }
+		//Statistiky
+		public PlayerStatistics Statistics { get; set; }
 
 		//Ziska velikost bitevniho pole
 		public byte? GetBattlefieldSize(byte minimumSize = 6, byte maximumSize = 16);

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using Battleships.BattleshipsGame.Battleships;
@@ -14,12 +15,14 @@ namespace Battleships.BattleshipsGame.Battlefields
 		public byte Width { get; }
 		public byte Height { get; }
 
+		[JsonIgnore]
 		//Mapa souradnic
 		public IEnumerable<IEnumerable<Coordinate>> CoordinateMap { get; }
 		//Sada lodi pouzita v bitevnim poli <velikost lodi, pocet>
 		public IReadOnlyDictionary<BattleshipSize, byte> BattleshipSet { get; }
 		//Souradnice, na ktere se strilelo
 		private protected Dictionary<Coordinate, AttackResult> _AttackedCoordinates { get; }
+		[JsonIgnore]
 		public IReadOnlyDictionary<Coordinate, AttackResult> AttackedCoordinates { get => _AttackedCoordinates; }
 		//Seznam plne odhalenych lodi
 		private protected List<Battleship> _SunkenBattleships;
@@ -27,6 +30,7 @@ namespace Battleships.BattleshipsGame.Battlefields
 
 		//Vyhodnoti, zda jsou vsechny lode potopeny
 		//Vsechny lode jsou potopeny, pokud se pocet potopenych lodi shoduje s poctem lodi v sade
+		[JsonIgnore]
 		public bool AllShipsSunken
 		{
 			get => BattleshipSet.All(
@@ -34,6 +38,7 @@ namespace Battleships.BattleshipsGame.Battlefields
 			);
 		}
 
+		
 		public EnemyBattlefield(byte width, byte? height = null, IReadOnlyDictionary<BattleshipSize, byte> battleshipSet = null)
 		{
 			byte trueHeight = height ?? width;

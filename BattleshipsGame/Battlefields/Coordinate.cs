@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 
@@ -9,11 +10,13 @@ namespace Battleships.BattleshipsGame.Battlefields
 	//Souradnice v bitevnim poli
 	class Coordinate
 	{
-		//Ciselne souradnice
+		//Ciselne 
 		public byte X { get; }
 		public byte Y { get; }
 		//Textove souradnice
+		[JsonIgnore]
 		public string Row { get => Coordinate.RowToString(Y); }
+		[JsonIgnore]
 		public string Column { get => Coordinate.ColumnToString(X); }
 
 		//https://www.daniweb.com/programming/software-development/threads/368070/array-of-letters-of-the-alphabet-in-c

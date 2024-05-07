@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using Battleships.BattleshipsGame.Battlefields;
@@ -10,6 +11,7 @@ namespace Battleships.BattleshipsGame.Battleships
 	//Bitevni lod. Obsahuje informace o velikosti, pozici na mape a orientaci.
 	class Battleship
 	{
+		[JsonIgnore]
 		//Bitevni pole, kteremu lod patri
 		public EnemyBattlefield Parent { get; } //Mozna? Battlefield Parent { get; }
 
@@ -19,8 +21,9 @@ namespace Battleships.BattleshipsGame.Battleships
 		public BattleshipSize Size { get; }
 		//Orientace lodi
 		public BattleshipOrientation Orientation { get; }
+		[JsonIgnore]
 		//Vsechny souradnice, na kterych se lod nachazi
-		public IEnumerable<Coordinate> TotalPosition { get; }
+		public IEnumerable<Coordinate> TotalPosition { get; set; }
 
 		//Vytvori novou lod
 		public Battleship(Battlefield parent, Coordinate position, BattleshipSize size, BattleshipOrientation orientation)

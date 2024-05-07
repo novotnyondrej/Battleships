@@ -1,0 +1,27 @@
+﻿{
+	"self": "Espanol",
+
+	"Unknown": "Traduccion desconocido",
+	"Undefined": "Traduccion indefinido: \"{0}\"",
+	"AnyKeyToContinue": "<SelectionColor>> Presiona una tecla para continuar <SelectionColor>",
+
+	"Back": "Volver a {0}",
+	"Exit": "Salir",
+	"NextPage": "Pagina proxima",
+	"PreviousPage": "Pagina anterior",
+
+	"MainMenu": "Menu principal",
+	"NewGame": "Juego nuevo",
+	"LoadGame": "Cargar juego",
+	"View": "Examinar",
+	"ViewPlayers": "Jugadores",
+	"ViewGames": "Juegos",
+	"Settings": "Configuracion",
+	"Help": "Ayuda",
+	"Controls": "Control",
+	"MenuNavigation": "Navegacion de menu",
+	"Inputs": "Entradas de usuario",
+	"TextInputs": "Entradas de texto",
+	"NumberInputs": "Entradas de numero",
+	"SelectionInputs": "Entradas de seleccion"
+}

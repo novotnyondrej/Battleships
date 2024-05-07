@@ -72,7 +72,7 @@ namespace Battleships.Data
 			//Ziskani cesty k souboru
 			string filePath = SaveLocation + fileName;
 			//Kontrola existence souboru
-			if (File.Exists(filePath)) return default;
+			if (!File.Exists(filePath)) return default;
 			try
 			{
 				//Cteni vsech dat ze souboru
@@ -81,6 +81,34 @@ namespace Battleships.Data
 			catch (Exception e)
 			{
 				return default;
+			}
+		}
+		//Ulozi soubor
+		public static bool SaveFile(string fileName, string data)
+		{
+			//Ziskani cesty k souboru
+			string filePath = SaveLocation + fileName;
+			//Zajisteni slozky s daty
+			if (!Directory.Exists(SaveLocation))
+			{
+				try
+				{
+					Directory.CreateDirectory(SaveLocation);
+				}
+				catch (Exception e)
+				{
+					return false;
+				}
+			}
+			//Ulozeni dat
+			try
+			{
+				File.WriteAllText(filePath, data);
+				return true;
+			}
+			catch (Exception e)
+			{
+				return false;
 			}
 		}
 	}

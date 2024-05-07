@@ -34,26 +34,28 @@ namespace Battleships.Menus
 		//Zobrazi uzivateli menu
 		public void Show()
 		{
-			//Nacteni moznosti jako texty
-			List<(string option, Func<(bool available, TranslationKey reasonTranslationKey)> availability)> options = Options.Select(
-				(option) => (option.Name, option.AvailabilityFunction ?? (() => (true, TranslationKey.Unknown)))
-			).ToList();
-			//Pocet vsech moznosti
-			int realOptionsCount = options.Count;
-			//Pridani moznosti pro vraceni se zpet
-			options.Add(
-				(
-					HasParent
-						? String.Format(ContentManager.GetTranslation(TranslationKey.Back), Parent.Name)
-						: ContentManager.GetTranslation(TranslationKey.Exit),
-					() => (true, TranslationKey.Unknown)
-				)
-			);
 			//Index vybrane moznosti
 			int index = 0;
+			//Pocet vsech moznosti
+			int realOptionsCount = 0;
 			//Dokud neni konec tak zobrazovat menu
 			do
 			{
+				//Nacteni moznosti jako texty
+				List<(string option, Func<(bool available, TranslationKey reasonTranslationKey)> availability)> options = Options.Select(
+					(option) => (option.Name, option.AvailabilityFunction ?? (() => (true, TranslationKey.Unknown)))
+				).ToList();
+				//Pocet vsech moznosti
+				realOptionsCount = options.Count;
+				//Pridani moznosti pro vraceni se zpet
+				options.Add(
+					(
+						HasParent
+							? String.Format(ContentManager.GetTranslation(TranslationKey.Back), Parent.Name)
+							: ContentManager.GetTranslation(TranslationKey.Exit),
+						() => (true, TranslationKey.Unknown)
+					)
+				);
 				//Ziskani volby
 				index = Input.SelectionInput(
 					NameTranslationKey ?? TranslationKey.Unknown,

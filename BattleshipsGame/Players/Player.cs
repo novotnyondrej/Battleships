@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Text.Json.Serialization;
 using System.Collections.Generic;
 using Battleships.BattleshipsGame.Battlefields;
 using Battleships.BattleshipsGame.Battleships;
@@ -16,12 +17,15 @@ namespace Battleships.BattleshipsGame.Players
 	class Player : IPlayer
 	{
 		//Jmeno hrace
-		public string Name { get; }
+		public string Name { get; set;  }
+		//Statistiky
+		public PlayerStatistics Statistics { get; set; }
 
 		//Konstruktor pro noveho hrace
-		private Player(string name)
+		public Player(string name)
 		{
 			Name = name;
+			Statistics = new();
 		}
 		//Vytvori noveho hrace
 		public static Player Create()
@@ -40,6 +44,8 @@ namespace Battleships.BattleshipsGame.Players
 					return (true, default);
 				}
 			);
+			//Kontrola jmena
+			if (name == default) return null;
 			//Vytvoreni hrace a pridani do globalniho seznamu hracu
 			Player player = new(name);
 			GlobalVariables.AddPlayer(player);
@@ -118,6 +124,23 @@ namespace Battleships.BattleshipsGame.Players
 		public override string ToString()
 		{
 			return Name;
+		}
+		public void ShowDetails()
+		{
+			Console.Clear();
+			InputManager.WriteLine(String.Format(
+				ContentManager.GetTranslation(TranslationKey.PlayerDetail),
+				Name,
+				Statistics.TotalHits,
+				Statistics.ShipsSunken,
+				Statistics.TotalMisses,
+				Statistics.GamesWon,
+				Statistics.GamesLost
+			));
+			//Potvrzeni
+			InputManager.WriteLine("");
+			InputManager.WriteLine(ContentManager.GetTranslation(TranslationKey.AnyKeyToContinue));
+			InputManager.ReadKey(true, false);
 		}
 	}
 }

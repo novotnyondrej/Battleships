@@ -42,13 +42,51 @@ namespace Battleships
 						//Spusteni hry
 						while (game.Progress() == true) { };
 					}),
-					new ParentMenu(TranslationKey.LoadGame, Enumerable.Empty<IMenu>(), () => (GlobalVariables.Games.Any(), TranslationKey.NoGames)),
+					new ActionMenu(TranslationKey.LoadGame, () =>
+					{
+						//Vybrani hry
+						int gameIndex = Input.SelectionInput(TranslationKey.LoadGame, GlobalVariables.Games.Select(
+							(game) => (game.ToString(), !game.Ended, TranslationKey.GameEndedAlready)
+						));
+						//Kontrola vyberu
+						if (gameIndex < 0) return;
+						//Pokracovani ve hre
+						while (GlobalVariables.Games.ElementAt(gameIndex).Progress() == true) { };
+
+					}, () => (GlobalVariables.Games.Any((game) => !game.Ended), TranslationKey.NoGames)),
 					new ParentMenu(TranslationKey.View, new List<IMenu>()
 					{
-						new PaginableMenu<Player>(TranslationKey.ViewPlayers, () => GlobalVariables.Players, new PlayerMenu()),
-						new PaginableMenu<Game>(TranslationKey.ViewGames, () => GlobalVariables.Games, new GameMenu())
+						new ActionMenu(TranslationKey.ViewPlayers, () =>
+						{
+							//Vybrani hrace
+							int playerIndex = Input.SelectionInput(TranslationKey.ViewPlayers, GlobalVariables.Players.Select(
+								(player) => player.ToString()
+							));
+							//Kontrola vyberu
+							if (playerIndex < 0) return;
+							//Zobrazeni detailu hrace
+							GlobalVariables.Players.ElementAt(playerIndex).ShowDetails();
+
+						}, () => (GlobalVariables.Players.Any(), TranslationKey.NoPlayers)),
+						//new PaginableMenu<Game>(TranslationKey.ViewGames, () => GlobalVariables.Games, new GameMenu())
 					}),
-					new ParentMenu(TranslationKey.Settings, Enumerable.Empty<IMenu>()),
+					new ParentMenu(TranslationKey.Settings, new List<IMenu>()
+					{
+						new ActionMenu(TranslationKey.Language, () =>
+						{
+							//Ziskani noveho vyberu jazyka
+							int languageIndex = Input.SelectionInput(
+								TranslationKey.SelectLanguage,
+								ContentManager.Languages.Select((language) => ContentManager.GetTranslation(TranslationKey.self, language) + "(" + language + ")"),
+								ContentManager.Languages.ToList().IndexOf(GlobalVariables.Settings.Language)
+							);
+							//Kontrola vyberu
+							if (languageIndex < 0) return;
+							//Prenastaveni jazyka
+							GlobalVariables.Settings.Language = ContentManager.Languages.ElementAt(languageIndex);
+							GlobalVariables.SaveSettings();
+						})
+					}),
 					new ParentMenu(TranslationKey.Help, new List<IMenu>()
 					{
 						new ParentMenu(TranslationKey.Controls, new List<IMenu>()

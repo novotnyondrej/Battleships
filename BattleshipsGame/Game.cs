@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using Battleships.BattleshipsGame.Players;
@@ -26,12 +27,16 @@ namespace Battleships.BattleshipsGame
 		//Urcuje, kdo je prave na rade
 		public bool ChallengerOnMove { get; private set; }
 		//Zda hra aktualne povoluje utoky do ciziho pole
+		[JsonIgnore]
 		public bool AttackingAllowed { get; private set; }
 		//Zda je hra ukoncena
+		[JsonIgnore]
 		public bool Ended { get => ChallengerBoard.OwnerBattlefield.AllShipsSunken || OpponentBoard.OwnerBattlefield.AllShipsSunken; }
 		//Kdo vyhral
+		[JsonIgnore]
 		public bool ChallengerWon { get => OpponentBoard.OwnerBattlefield.AllShipsSunken; }
 
+	
 		//Vytvori novou hru
 		private Game(Board challengerBoard, Board opponentBoard, bool challengerStarts = true)
 		{
@@ -63,7 +68,14 @@ namespace Battleships.BattleshipsGame
 					TranslationKey.NewPlayer
 				);
 				//Pokud hrac neni nastaven, zrusit vytvareni
-				if (challenger == default) return default;
+				if (challenger == default)
+				{
+					Console.Clear();
+					InputManager.WriteLine(ContentManager.GetTranslation(TranslationKey.GameCreationCancelled));
+					InputManager.WriteLine(ContentManager.GetTranslation(TranslationKey.AnyKeyToContinue));
+					InputManager.ReadKey(true, false);
+					return default;
+				}
 			}
 			//Vyber oponenta
 			if (opponent == default)
@@ -78,7 +90,14 @@ namespace Battleships.BattleshipsGame
 					}
 				);
 				//Kontrola rozhodnuti
-				if (decision == -1) return default;
+				if (decision == -1)
+				{
+					Console.Clear();
+					InputManager.WriteLine(ContentManager.GetTranslation(TranslationKey.GameCreationCancelled));
+					InputManager.WriteLine(ContentManager.GetTranslation(TranslationKey.AnyKeyToContinue));
+					InputManager.ReadKey(true, false);
+					return default;
+				}
 				else if (decision == 0)
 				{
 					//Chce hrat proti hracovi
@@ -92,7 +111,14 @@ namespace Battleships.BattleshipsGame
 						TranslationKey.NewPlayer
 					);
 					//Pokud hrac neni nastaven, zrusit vytvareni
-					if (opponent == default) return default;
+					if (opponent == default)
+					{
+						Console.Clear();
+						InputManager.WriteLine(ContentManager.GetTranslation(TranslationKey.GameCreationCancelled));
+						InputManager.WriteLine(ContentManager.GetTranslation(TranslationKey.AnyKeyToContinue));
+						InputManager.ReadKey(true, false);
+						return default;
+					}
 				}
 				else
 				{
@@ -104,7 +130,14 @@ namespace Battleships.BattleshipsGame
 			//Ziskani velikosti mapy
 			byte? unverifiedBattlefieldSize = challenger.GetBattlefieldSize(6, 16);
 			//Kontrola vysledku
-			if (unverifiedBattlefieldSize == null) return default;
+			if (unverifiedBattlefieldSize == null)
+			{
+				Console.Clear();
+				InputManager.WriteLine(ContentManager.GetTranslation(TranslationKey.GameCreationCancelled));
+				InputManager.WriteLine(ContentManager.GetTranslation(TranslationKey.AnyKeyToContinue));
+				InputManager.ReadKey(true, false);
+				return default;
+			}
 			//Prevod na jisty bajt
 			byte battlefieldSize = (byte)unverifiedBattlefieldSize;
 			
@@ -113,13 +146,26 @@ namespace Battleships.BattleshipsGame
 			//Vybrani sady lodi
 			IReadOnlyDictionary<BattleshipSize, byte> battleshipSet = challenger.PickBattleshipSet(battleshipSets);
 			//Kontrola vysledku
-			if (battleshipSet == null) return default;
+			if (battleshipSet == null)
+			{
+				Console.Clear();
+				InputManager.WriteLine(ContentManager.GetTranslation(TranslationKey.GameCreationCancelled));
+				InputManager.WriteLine(ContentManager.GetTranslation(TranslationKey.AnyKeyToContinue));
+				InputManager.ReadKey(true, false);
+				return default;
+			}
 			//Vytvoreni bitevnich poli
 			Battlefield challengerBattlefield = new(battlefieldSize, null, battleshipSet);
 			Battlefield opponentBattlefield = new(battlefieldSize, null, battleshipSet);
 			//Umisteni vsech lodi do bitevnich poli
-			if (!challenger.PlaceAllBattleships(challengerBattlefield)) return default;
-			if (!opponent.PlaceAllBattleships(opponentBattlefield)) return default;
+			if (!challenger.PlaceAllBattleships(challengerBattlefield) || !opponent.PlaceAllBattleships(opponentBattlefield))
+			{
+				Console.Clear();
+				InputManager.WriteLine(ContentManager.GetTranslation(TranslationKey.GameCreationCancelled));
+				InputManager.WriteLine(ContentManager.GetTranslation(TranslationKey.AnyKeyToContinue));
+				InputManager.ReadKey(true, false);
+				return default;
+			}
 
 			//Vytvoreni hracich desek
 			Board challengerBoard = new(challenger, challengerBattlefield);
@@ -153,6 +199,7 @@ namespace Battleships.BattleshipsGame
 			byte attemptsCount = 0;
 			bool success = false;
 			AttackResult attackResult = default;
+			bool sunken = false;
 			//Uzivatel ma 3 pokusy na uspesny utok, pokud bude z nejakeho duvodu zamitnut 3x za sebou, tah se posune na protihrace
 			//Pri spravnem kodu nikdy nebude treba vice jak 1 pokus
 			do
@@ -160,14 +207,27 @@ namespace Battleships.BattleshipsGame
 				//Ziskani souradnice utoku
 				Coordinate coordinate = currentBoard.Attack();
 				//Pokud souradnice nebyla upresnena, uzivatel si preje akci zrusit
-				if (coordinate == null) return null;
+				if (coordinate == null)
+				{
+					Console.Clear();
+					InputManager.WriteLine(String.Format(ContentManager.GetTranslation(TranslationKey.GameTerminated), currentBoard.Owner.Name));
+					InputManager.WriteLine(ContentManager.GetTranslation(TranslationKey.AnyKeyToContinue));
+					InputManager.ReadKey(true, false);
+					return default;
+				}
 
 				//Udeleni grantu k utoku a nasledne provedeni samotneho utoku
 				AttackingAllowed = true;
-				(success, attackResult) = nextBoard.GetAttacked(coordinate);
+				(success, attackResult, sunken) = nextBoard.GetAttacked(coordinate);
 				AttackingAllowed = false;
 				//Zapocitani pokusu
 				attemptsCount++;
+				//Pridani do statistik
+				if (attackResult == AttackResult.Hit) currentBoard.Owner.Statistics.TotalHits++;
+				else if (attackResult == AttackResult.Miss) currentBoard.Owner.Statistics.TotalMisses++;
+				if (sunken) currentBoard.Owner.Statistics.ShipsSunken++;
+				//Ukladani hracu
+				GlobalVariables.SavePlayers();
 			}
 			while ((!success || (attackResult == AttackResult.Hit && !nextBoard.OwnerBattlefield.AllShipsSunken)) && attemptsCount < 3);
 			//Prohozeni roli
@@ -182,6 +242,9 @@ namespace Battleships.BattleshipsGame
 			Console.Clear();
 			if (!nextBoard.OwnerBattlefield.AllShipsSunken)
 			{
+				//Ulozeni statistik
+				GlobalVariables.SavePlayers();
+
 				InputManager.WriteLine(String.Format(ContentManager.GetTranslation(TranslationKey.EndAttack), currentBoard.Owner.Name));
 				//Potvrzeni
 				InputManager.WriteLine(ContentManager.GetTranslation(TranslationKey.AnyKeyToContinue));
@@ -189,18 +252,48 @@ namespace Battleships.BattleshipsGame
 			}
 			else
 			{
-				InputManager.WriteLine(String.Format(ContentManager.GetTranslation(TranslationKey.WinnerText), currentBoard.Owner.Name));
+				//Konec hry
+				//Pridani do statistik
+				currentBoard.Owner.Statistics.GamesWon++;
+				nextBoard.Owner.Statistics.GamesLost++;
+				PrintStatus();
+			}
+			//Vraceni vysledku
+			return success;
+		}
+		//Vypise status hry
+		public void PrintStatus()
+		{
+			if (Ended)
+			{
+				Board winnerBoard = ChallengerWon ? ChallengerBoard : OpponentBoard;
+
+				InputManager.WriteLine(String.Format(ContentManager.GetTranslation(TranslationKey.WinnerText), winnerBoard.Owner.Name));
 				//Potvrzeni
 				InputManager.WriteLine(ContentManager.GetTranslation(TranslationKey.AnyKeyToContinue));
 				InputManager.ReadKey(true, false);
 				//Vypsani bitevnich poli
-				currentBoard.PrintBattlefields(true);
+				winnerBoard.PrintBattlefields(false, false);
 				//Potvrzeni
 				InputManager.WriteLine(ContentManager.GetTranslation(TranslationKey.AnyKeyToContinue));
 				InputManager.ReadKey(true, false);
 			}
-			//Vraceni vysledku
-			return success;
+			else
+			{
+				InputManager.WriteLine(ContentManager.GetTranslation(TranslationKey.GameInProgress));
+				//Potvrzeni
+				InputManager.WriteLine(ContentManager.GetTranslation(TranslationKey.AnyKeyToContinue));
+				InputManager.ReadKey(true, false);
+				//Vypsani bitevnich poli
+				ChallengerBoard.PrintBattlefields(true, true);
+				//Potvrzeni
+				InputManager.WriteLine(ContentManager.GetTranslation(TranslationKey.AnyKeyToContinue));
+				InputManager.ReadKey(true, false);
+			}
+		}
+		public override string ToString()
+		{
+			return String.Format(ContentManager.GetTranslation(TranslationKey.GameString), ChallengerBoard.Owner.Name, OpponentBoard.Owner.Name);
 		}
 	}
 }
